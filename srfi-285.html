@@ -671,9 +671,8 @@ given date object, as an exact integer.</p>
 <p>Returns a date object for the date represented by the Rata Die number
 <var>ei</var>.</p>
 
-<pre><code
->;;; Calculate the occurence of Gregorian Easter. This is the date of
-;;; Easter in Catholicism and Protestantism.
+<pre><code>;;; Calculate the occurence of Gregorian Easter. This is the
+;;; date of Easter in Roman Catholicism and Protestantism.
 
 (define (first-sunday-after date)
   (let ((weekday (<a href="#date-iso-weekday">date-iso-weekday</a> date)))
