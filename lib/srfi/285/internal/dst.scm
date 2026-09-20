@@ -18,7 +18,7 @@
 
 (define (one-based-day->rd year one-based-day)
   ;; From POSIX: https://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap08.html#tag_08
-  ;; 
+  ;;
   ;; "That is, in all years-including leap years-February 28 is day 59
   ;; and March 1 is day 60."
   (if (<= one-based-day 59)

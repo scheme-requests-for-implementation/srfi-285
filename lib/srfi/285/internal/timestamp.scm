@@ -390,7 +390,7 @@ fold value for given local time in the given timezone"
     ((seconds)
      (unless (and (exact? seconds)
                   (rational? seconds))
-       (error "posix-time->utc-timestamp called with invalid \ 
+       (error "posix-time->utc-timestamp called with invalid \
 parameters" seconds))
      (posix-time->utc-timestamp (exact (truncate seconds))
                                 (exact
@@ -400,7 +400,7 @@ parameters" seconds))
     ((seconds nano-seconds)
      (unless (and (integer? seconds)
                   (integer? nano-seconds))
-       (error "posix-time->utc-timestamp called with \ 
+       (error "posix-time->utc-timestamp called with \
 invalid parameters" seconds nano-seconds))
      (let* ((days (floor-quotient seconds 86400))
             (date (rata-die->date (+ unix-epoch-rd days)))

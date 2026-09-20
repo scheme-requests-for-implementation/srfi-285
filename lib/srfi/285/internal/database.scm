@@ -138,7 +138,7 @@
 
 (define (tz-timezone name)
   ;; Lookup the TZdb "name" in the current known timezone database.
-  ;; 
+  ;;
   ;; The database is crawled each refresh. Once a filename has been read,
   ;; the filename is cached until the next refresh.
   (unless (string? name)
@@ -157,9 +157,9 @@
 ;;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Throughout this file, a "TAI timestamp" is the number of TAI seconds
 ;;; such that 10 is the UNIX epoch.
-;;; 
+;;;
 ;;; DTAI(x) = x - UTC(x) at some TAI timestamp x.
-;;; 
+;;;
 ;;; leap-seconds: A vector of <leap-second> records. Each timestamp
 ;;; corresponds to a POSIX timestamp where DTAI changes. Basically, one
 ;;; second after the leap second.
@@ -174,13 +174,13 @@
 (define (ls-utc-occurence i)
   ;; Returns the UTC timestamp after the ith leap second. This is the
   ;; :00 timestamp right after the leap second, positive or negative.
-  ;; 
+  ;;
   ;; For positive leap seconds, this timestamp could also be interpreted
   ;; as the :60 second previously.
   (leap-second-posix (vector-ref leap-seconds i)))
 (define (ls-tai-occurence i)
   ;; Return the TAI timestamp after the ith leap second.
-  ;; 
+  ;;
   ;; For example, when the leap second is positive, the returned number
   ;; is :00 in UTC, and the TAI timestamp one second before it is :60 in
   ;; UTC. When the leap second is negative, the returned number is :00
@@ -225,7 +225,7 @@
 
 (define (set-leap-seconds-expiry! info)
   ;; The leap-seconds vector needs to be initialized first.
-  ;; 
+  ;;
   ;; The expiry is an NTP timestamp. So convert it using the last
   ;; delta-tai.
   (let ((expiry (leap-seconds-info-expiry info)))
@@ -287,12 +287,12 @@ Falling back to UTC.\n" (current-error-port))
 
 (define (leapsecond-info/tai tai-timestamp)
   ;; Returns two values:
-  ;; 
+  ;;
   ;; 1. A boolean to determine if this TAI timestamp represents a leap
   ;;    second. That is, it is a TAI timestamp that has no unique POSIX
   ;;    timestamp equivalent.
   ;; 2. TAI - UTC at this point in time.
-  ;; 
+  ;;
   ;; If the timestamp is at the leap second, then the offset is the
   ;; offset after that timestamp.
   (define (timestamp-on-leap-second? i)
@@ -319,13 +319,13 @@ Falling back to UTC.\n" (current-error-port))
 
 (define (leapsecond-info/utc utc-timestamp)
   ;; Returns two values:
-  ;; 
+  ;;
   ;; 1. A boolean to determine if this UTC timestamp *might* be a leap
   ;; second. That is, it could be :60 or :00. For negative leap seconds,
   ;; this is never true.
-  ;; 
+  ;;
   ;; 2. TAI-UTC at this point in time.
-  ;; 
+  ;;
   ;; If the timestamp might be a positive leap second, the returned delta
   ;; is the previous delta. The most natural interpretation of the two
   ;; values is that the seconds timestamp is :60.
@@ -359,7 +359,7 @@ Falling back to UTC.\n" (current-error-port))
 (define (find-offset/wall timezone local-time)
   ;; Given timestamp in local UNIX seconds, find the possible ranges that
   ;; the local time is in.
-  ;; 
+  ;;
   ;; Since offsets can go backwards in time, two ranges can overlap.
   (let* ((ranges (timezone-local-ranges timezone))
          (i (search-ranges ranges local-time))
@@ -381,7 +381,7 @@ Falling back to UTC.\n" (current-error-port))
       ((and (= i (- (vector-length ranges) 1))
             (timezone-rule timezone))
        ;; Calculate rules using the POSIX timezone rules.
-       ;; 
+       ;;
        ;; It is possible for the calculated previous transition
        ;; to overlap the second-to-last timezone entry in the table.
        ;; The RFC prohibits this, but the implementation does not do

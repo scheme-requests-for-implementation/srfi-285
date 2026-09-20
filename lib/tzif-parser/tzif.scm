@@ -272,7 +272,7 @@ Use a systematic name instead." (current-error-port))
   (let* ((reader (if (= block-version-number 1)
                      read-s32
                      read-s64))
-         (transition-times 
+         (transition-times
           (read-transition-times reader
                                  (tzif-header-timecnt header)
                                  filename

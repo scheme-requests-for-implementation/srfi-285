@@ -25,7 +25,7 @@
           tzif-leap-seconds-record-vector
           tzif-leap-seconds-record-expiry
           tzif-leap-seconds-record->datum
- 
+
           tzif-transition tzif-transition?
           tzif-transition-time tzif-transition-offset
           tzif-transition-dst? tzif-transition-designation
