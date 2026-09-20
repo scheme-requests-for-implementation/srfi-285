@@ -1,0 +1,1870 @@
+<!DOCTYPE html>
+<html lang="en">
+<!--
+SPDX-FileCopyrightText: 2024-2026 Daphne Preston-Kendal
+SPDX-FileCopyrightText: 2026 Peter McGoron
+SPDX-License-Identifier: MIT
+-->
+  <head>
+    <meta charset="utf-8">
+    <title>SRFI ###: Dates and Times</title>
+    <style>
+            table {
+              border: 1px solid;
+              margin-bottom: 12pt;
+            }
+            @media (prefers-color-scheme: light) {
+              :root {
+                --background-color: white;
+                --link-color: blue;
+                --text-color: black;
+                --visited-link-color: purple;
+              }
+
+              pre {
+                  border: 1px solid;
+                  padding: 7.5px;
+                  background-color: #f0f0f0;
+                  margin-bottom: 18pt;
+              }
+
+              code {
+                  background-color: #f0f0f0;
+              }
+            }
+
+            @media (prefers-color-scheme: dark) {
+              :root {
+                --background-color: #161616;
+                --link-color: SkyBlue;
+                --text-color: #e0e0e0;
+                --visited-link-color: Orchid;
+              }
+
+              pre {
+                  border: 1px solid;
+                  padding: 7.5px;
+                  background-color: #2b2b2b;
+                  margin-bottom: 18pt;
+              }
+
+              code {
+                background-color: #2b2b2b;
+              }
+            }
+
+    .never-break-inside > a {
+      white-space: nowrap;
+    }
+    .never-break-inside > code {
+      white-space: nowrap;
+    }
+
+            .normal-font {
+              font-family: sans-serif;
+            }
+
+            .feature {
+              overflow: hidden;
+            }
+
+            .category {
+              float: right;
+              font-family: monospace;
+              font-size: 12pt;
+            }
+
+            .boxed {
+              border: 1px solid;
+              padding-top: 6pt;
+              padding-bottom: 6pt;
+              padding-left: 6pt;
+              padding-right: 12pt;
+              overflow: auto;
+              margin-bottom: 6pt;
+            }
+
+            .boxed-tag {
+              font-style: italic;
+            }
+
+            .example-code {
+              /* background-color: var(--background-color); */
+              display: inline-block;
+              min-width: 46ch;
+            }
+
+            a {
+              color: var(--link-color);
+            }
+            a:visited {
+              color: var(--visited-link-color);
+            }
+            body {
+              background-color: var(--background-color);
+              color: var(--text-color);
+            }
+            .report-name {
+              font-style: italic;
+            }
+
+            .centered {
+             text-align: center;
+            }
+            .evals-side {
+            }
+
+            .evals-text {
+              font-family: serif;
+              font-style: italic;
+            }
+    </style>
+    <link href="/favicon.png" rel="icon" sizes="192x192" type="image/png">
+    <link rel="stylesheet" href="https://srfi.schemers.org/srfi.css" type="text/css">
+    <meta name="viewport" content="width=device-width, initial-scale=1"></head>
+  <body>
+    <h1><a href="https://srfi.schemers.org/"
+        ><img class="srfi-logo"
+              src="https://srfi.schemers.org/srfi-logo.svg"
+              alt="SRFI surfboard logo"
+        /></a>###: Dates and Times</h1>
+
+<p>by Peter McGoron (steward, corresponding author);<br>
+John Cowan (original design), Daphne Preston-Kendal (design and specification)
+and Arvydas Silanskas (implementation)
+</p>
+
+<h2 id="issues">Issues</h2>
+
+<ol>
+<li>Serialization to and from djb’s tai64n
+notation would be nice, but there are two conflicting specs. One page claims the epoch
+(<code>@400000000000000000000000</code>) is midnight in TAI on 1 January 1970;
+another claims it’s 00:00:10 in TAI on 1 January 1970.</li>
+<li>The use of exact rationals for seconds in various situations makes the
+    time formats general. Are there any performance issues related to this?</li>
+<li>What time zone interpretation should
+<a href="#moment-to-timestamp"><code>moment-&gt;timestamp</code></a>
+and
+<a href="#timestamp-to-moment"><code>timestamp-&gt;moment</code></a> use?</li>
+<li>Should a way to access the name (ICANN name, CLDR name) of a time
+zone object be provided? What if there is none?</li>
+<li>Expand the algebra of time-deltas?</li>
+<li>RFC 822 timestamps?</li>
+<li>Should there be a procedure to create a timezone that has a single,
+    calculatable DST transition at a certain time each year? This is
+    how POSIX TZ specs function. [<a href="#posix2017">POSIX 2017</a>].
+</li>
+<li>Should there be a way to construct timezone objects equivalently to
+    parsing from the timezone database?</li>
+<li>This SRFI needs a more sophisticated system for cache control — see
+    Python’s zoneinfo library.</li>
+<li>All normative references to ISO standards (for instance, Annex D) need
+    to be replaced with normative descriptions in this SRFI. These
+    standards are proprietary.
+</li>
+<li>When a refresh happens, are all timestamp objects affected, or do these
+    objects use the old timezones until new timestamps are constructed?
+    Should there be a difference between static and dynamic timestamps?
+</li>
+<li>Do we need to have Rata Die and Modified Julian Date at the same
+    time?</li>
+<li>A timezone database file can theoretically encode a timezone that has
+    an arbitrary fold number (for instance, a timezone that decreases the
+    UTC offset by one hour every hour). Should that be reflected here even
+    though no reasonable timezone would do this?</li>
+<li>Some timezones, such as those describing the mean solar time of a
+    location, are defined as an offset of seconds from UTC. Although
+    these timezone are historical (as far as I am aware), such a
+    timezone cannot represent leap seconds as a timestamp. How should
+    these be handled?</li>
+<li>The SRFI should specify specific error types to be raised when
+    e.g. a leap second or fold error occurs.</li>
+<li>Should TAI&minus;UTC be fixed to be 10 for all values prior to 1972?
+    This is strictly incorrect, but the difference is not computable,
+    and many calendars and calculations just fix it to be 10.</li>
+</ol>
+
+<h2 id="abstract">Abstract</h2>
+
+<p>
+  This SRFI details an API for storing and manipluating dates and times.
+  This SRFI decomposes dates and times into dates (a count of days in the
+  proleptic Gregorian calendar), clock times (time of day, independent of
+  time zone), moments (instants in TAI), timezones (a possibly dynamic
+  offset from UTC), timestamps (a date, clock time,and timezone), and
+  time deltas (measurement of elapsed time). By doing this, a Scheme
+  program can operate on days in different calendars and timestamps in
+  different timezones.
+</p>
+
+<h2 id="rationale">Rationale</h2>
+
+<p>
+  Representing time in computers is a very difficult task for something
+  that people generally expect to work without issue. End users may wish
+  to see non-Gregorian calendars, and may wish to calculate the occurences
+  of religious festivals on a computer. Beyond cultural reasons, the definition
+  of time and the definition of timezones may shift around due to laws,
+  <!-- This quote is about currency, but I like it so I put it here. -->
+  <a
+href="https://github.com/unicode-org/cldr/blob/release-40/common/supplemental/supplementalData.xml#L87-L94"
+  >“revolts, invasions, [and] new constitutions.”</a>
+</p>
+
+<p>
+  The desirable properties of a date and time library are:
+</p>
+
+<ul>
+<li><p>It should make doing the right thing easy, and attempts to do wrong
+things should look obviously wrong.</p></li>
+<li><p>It should be modelled on existing international standards for
+representing and communicating dates and times, both machine-readably
+(ISO 8601) and internationally (CLDR).</p></li>
+<li><p>It should allow measuring time very precisely. In particular, it should
+not lose precision as time moves further away from some particular
+epoch. (<span class="report-name">R<sup>7</sup>RS</span>’s <code>current-second</code> procedure gets less precise
+the further away from 1970 we get.)</p></li>
+<li><p>It should allow representation of dates and times in the very distant
+past: specific dates are known to within a single day going back at least
+2,500 years. It should also allow representation of dates and times in the very distant future. There should be no limit on the
+range of dates and times representable which any application, including
+those dealing with far-past historical events and those dealing with
+far-future projections, is ever likely to encounter.</p></li>
+<li><p>It should not be specific to any calendar system, even though the
+Gregorian calendar (and, in industrial applications, the derived ISO week
+calendar) is now effectively a worldwide standard. Fortunately this is
+not too hard, because humans have been accurately counting the number
+of sunsets and sunrises for thousands of years, and their methods of
+organizing their counts of these events into more managable periods of
+time usually follow strict arithmetic rules. A count of days from a known
+epoch, and knowledge of the arithmetic rules of each calendar system,
+is thus sufficient for representing different calendar systems.</p></li>
+<li><p>It should be possible to use the date and time library to represent time
+values from sources including operating system calls, network requests,
+and file formats both ancient and modern.</p></li>
+<li><p>It should be possible to accurately perform date and time arithmetic
+using rules that make sense to the majority of humans despite the
+irregularity of calendar systems. E.g. adding 2 years to March 1<sup>st</sup>, 2023
+should result in an answer of March 1<sup>st</sup>, 2025, notwithstanding that the year
+2024 was one day longer than a common year. Adding 1 month to January 31<sup>st</sup>
+should probably result in February 28<sup>th</sup>, Feburary 29<sup>th</sup>, or maybe March 1<sup>st</sup>,
+because there is no year with a February 30<sup>th</sup> (except in Sweden in 1712)
+or February 31<sup>st</sup>.</p></li>
+</ul>
+
+<p>
+  This library does not handle any locale information: it is intended
+  that a library that formats dates according to desired formats can be
+  based off of this library.
+</p>
+
+<p>
+  This library does not account for the effects of special and general
+  relativity [<a href="#einstein">Einstein 1907</a>].
+</p>
+
+<h2 id="specificiation">Specificiation</h2>
+<h3>Initial definitions</h3>
+
+<h4>TAI</h4>
+
+<p>This SRFI’s specification makes use of a <dfn>TAI</dfn> (<dfn>International Atomic
+Time</dfn>)-based calendar, defined as follows. A date in this TAI-based
+calendar consists of an integer count of days from an arbitrary epoch,
+and a real count of seconds in the range [0, 86400).</p>
+
+<p>At midnight UTC on January 1<sup>st</sup>, 1972, TAI was exactly 10 seconds ahead of
+UTC. Since then, additional leap seconds have been added increasing this
+difference. However, the TAI-based calendar has incremented monotonically
+by one second for every TAI second, rolling over and incrementing the
+count of days every 86,400 TAI seconds, without observing leap seconds.</p>
+
+<p>Implementations of this SRFI must perform correct conversions between
+TAI and UTC, respecting leap seconds, for all times beginning at this
+epoch. Before this epoch, the number of seconds added and removed in
+TAI to UTC and UTC to TAI conversions is unspecified, but must always
+be less than or equal to 10, and round-trip conversions should produce
+an identical time value to their initial input.</p>
+
+<div class="boxed">
+<p><span class="boxed-tag">Note</span>:
+  The difference between TAI and UTC was not fixed prior to 1972, and
+  there is no computable relationship between the two, although there is
+  some historical data available <a href="#histutc">[RS/PC n.d.]</a>.
+  Most computer timekeeping, takes <dfn>UTC</dfn> to be a
+  timescale where TAI&minus;UTC is proleptically assumed to be 10 for
+  all times prior to 1972.
+</p></div>
+
+<h4>Announcement and addition of leap seconds and changes to time zone rules</h4>
+
+<p>Every time a leap second
+[<a href="#bulletinc">Bizouard 2026</a>]
+is added or the rules for time zones change,
+the correspondence between TAI and UTC, and between UTC and local time
+in a particular location, is changed.</p>
+
+<p>In order to handle changes in the leap second set and in time zone
+rules, implementations should use the time zone database provided by the
+operating system where possible. The method by which time zone database
+information is found is implementation-specified. Furthermore, in case
+of a long-running program, they should reload the database at least
+once every 24 hours in order to pick up any upgrades, and should use the
+reloaded version for all subsequent conversions between TAI and UTC or
+UTC-derived time zones, including for objects created before the reload.</p>
+
+<p>
+  On most Linux systems, the timezone database is stored in
+  <code>/usr/share/zoneinfo</code>, and leap second information is stored
+  in <code>/usr/share/zoneinfo/leap-seconds.list</code>.
+</p>
+
+<p>If this is not possible, implementations may use their own database of
+time zones and leap seconds.
+The leap seconds list can be obtained from the IERS [<a href="#leap-seconds-list">IERS 2026</a>]
+and the <code>zoneinfo</code> database can be obtained from the
+IETF [<a href="#tzdb">IETF 2026</a>].
+</p>
+
+<h4>Various Calendars in this SRFI</h4>
+
+<p>
+  This SRFI refers at times to various calendar types.
+</p>
+
+<p>The <dfn>Rata Die</dfn> is a simple count of days beginning from a standard epoch
+of January 1<sup>st</sup> in the year AD 1 of the proleptic Gregorian calendar,
+which is Rata Die 1. This is the ‘fixed’ type used consistently as a lingua franca
+between calendar systems by <a href="$ReingoldAndDerschowitz"
+>Reingold and Dershowitz</a>.</p>
+
+<p>
+  The Gregorian calendar is used here for both its proleptic and its
+  current era, and indeed for any potential future era in which the
+  Gregorian calendar is superseded.
+</p>
+
+<p>
+  The <dfn>Modified Julian Day</dfn> is a simple count of days beginning
+  from a standard epoch of November 17<sup>th</sup>, 1858 in the Gregorian calendar,
+  which is Modified Julian Day 0.
+</p>
+
+<h4>Argument conventions</h4>
+
+<p>It is an error if the following arguments do not satisfy the predicates
+on the right part of the table, defining</p>
+
+<pre
+>(define (exact-rational? obj)
+  (and (rational? obj) (exact? obj)))</pre>
+
+<table>
+<tr><th>Argument</th><th>Predicate</th></tr>
+<tr><td><var>date</var></td><td><a href="#datep"><code>date?</code></a></td></tr>
+<tr><td><var>ei</var></td><td><code>exact-integer?</code></td></tr>
+<tr><td><var>er</var></td><td><code>exact-rational?</code></td></tr>
+<tr><td><var>clock-time</var></td><td><a href="#clock-timep"><code>clock-time?</code></a></td></tr>
+<tr><td><var>moment</var></td><td><a href="#momentp"><code>moment?</code></a></td></tr>
+<tr><td><var>timezone</var></td><td><a href="#timezonep"><code>timezone?</code></a></td></tr>
+<tr><td><var>timestamp</var></td><td><a href="#timestampp"><code>timestamp?</code></a></td></tr>
+<tr><td><var>time-delta</var></td><td><a href="#time-deltap"><code>time-delta?</code></a></td></tr>
+<tr><td><var>year</var></td> <td><code>exact-integer?</code></td></tr>
+<tr><td><var>month</var></td><td><code>exact-integer?</code></td></tr>
+<tr><td><var>day</var></td>  <td><code>exact-integer?</code></td></tr>
+<tr><td><var>weekday</var></td>  <td><code>exact-integer?</code></td></tr>
+<tr><td><var>hour</var></td> <td><code>exact-integer?</code></td></tr>
+<tr><td><var>minute</var></td><td><code>exact-integer?</code></td></tr>
+<tr><td><var>second</var></td>  <td><code>exact-rational?</code></td></tr>
+</table>
+
+<p>
+  If <var>year</var>, <var>month</var>, and <var>day</var>
+  do not reference a valid Gregorian date, an error is signaled.
+ Years are
+interpreted in the sense of ISO 8601 (so that 1 BC is year 0). Months
+are numbered starting from 1 for January, and days for the first day of
+each month.
+  This means that <var>month</var> is always in [1,12] and that
+  <var>day</var> is always positive.
+</p>
+
+<p>
+  If <var>weekday</var> is not in [1,7], an error is signaled.
+</p>
+
+<p>
+  If <var>hour</var> is not in [0,24), or if
+  <var>minute</var> is not in [0,60), or if
+  <var>second</var> is not in [0,60], then an error is signaled.
+</p>
+
+<h3>Optional and required features</h3>
+
+<p>
+  All libraries except <code>(srfi NNN current-time)</code>, and
+  <code>(srfi NNN tzdb)</code> are required.
+</p>
+
+<p>
+  The <code>(srfi NNN)</code> composite library exports all identifiers
+  that are supported by the implementation.
+</p>
+
+<h3>Dates</h3>
+
+<p><dfn>Date objects</dfn> represent a simple count of days from some unspecified
+epoch. They are independent of any time zone. The same date may, depending
+on the location, refer to a period of 24 hours which does not overlap at
+all the 24 hours to which that date refers in another location. (This
+is because some time zones in the Pacific Ocean are more than 12 hours
+offset from the meridian.)</p>
+
+<div class="boxed">
+<p><span class="boxed-tag">Rationale</span>:
+Many events are defined as taking place on a certain date,
+regardless of what time zone an observer happens to be in. April 20<sup>th</sup> 2025
+is Easter in 2025, regardless of whether one celebrates it in Hawaii
+at UTC&minus;10:00 or 2,000 km further south in Kiribati at UTC+14:00,
+which do not overlap at all. Other such events include birthdays and
+anniversaries, as well as national holidays in countries which span
+more than one time zone: the <i lang=fr>fête nationale française</i>
+is celebrated annually on July 14<sup>th</sup> in UTC&minus;10:00 in French Polynesia, and
+in UTC+12:00 in Wallis and Futuna, which overlap by only two hours. The
+date object is intended to represent the dates of such events.</p>
+</div>
+
+<p>The date procedures are defined with reference to <a href="ReingoldAndDerschowitz"
+>Reingold and Dershowitz 2018</a> (herafter RD); each procedure which has a corresponding formula in
+that book names that formula within its specification. In Reingold and
+Dershowitz, dates are represented by the ‘fixed’ data type, which
+in their Common Lisp implementation is simply an exact integer.</p>
+
+<p>The procedures and procedure names here assume use of the Gregorian
+calendar as described above. However, this need not be intrinsic in the
+representation nor the use of date objects: those who wish to provide
+procedures for other calendar systems should use standard date objects,
+using one of the procedures which converts a date object to a count of
+days from an epoch and applying their own calendar system’s arithmetic
+to it, with a constructor which uses one of the procedures to convert
+a count of days to a date object.</p>
+
+<p>In principle there is no reason for the range of dates supported by an
+implementation to be limited at all: a simple count of days can fit in
+a bignum. Implementations should support a practically unlimited range
+of dates. However, implementations must support all dates within the
+current Julian period (4713 BC to AD 3267 inclusive). Assuming a rata
+die-based representation, this requires at least a 22 bit signed integer
+to represent the count of days.</p>
+
+<p>A date object corresponds to a complete representation of calendar date
+in ISO 8601 (section 5.2.2.1 of <a href="#ISO8601-2019">ISO 8601:2019</a>). Accessors are also
+provided for complete representations of week dates (section 5.2.4.1).</p>
+
+<div class="feature">
+<span class="category">(srfi NNN date)<br>procedure</span>
+<code class="signature">(<a id="make-date" href="#make-date">make-date</a> <var>year</var> <var>month</var> <var>day</var>)</code>
+</div>
+
+<p>Return a new date object for the date which is represented in the
+Gregorian calendar by the given <var>year</var>, <var>month</var>, and <var>day</var>.</p>
+
+<div class="boxed">
+<p><span class="boxed-tag">Note</span>:
+This corresponds to <code>fixed-from-gregorian</code>
+in <a href="#RheingoldAndDerschowitz">RD</a>.
+</div>
+
+<div class="feature">
+<span class="category">(srfi NNN date)<br>procedure</span>
+<code class="signature">(<a id="datep" href="#datep">date?</a> <var>obj</var>)</code>
+</div>
+
+<p>Returns <code>#t</code> if <var>obj</var> is a date object, or <code>#f</code> otherwise.</p>
+
+<div class="feature">
+<span class="category">(srfi NNN date)<br>procedure</span>
+<code class="signature">(<a id="date-ymd" href="#date-ymd">date-ymd</a> <var>date</var>)</code>
+</div>
+
+<p>Returns three values, the year, month, and day numbers respectively of
+the date represented by the given <var>date</var>. The numbering convention is
+identical to that used by <a href="#make-date"><code>make-date</code></a>, so that the following procedure
+yields an object which is <a href="#dateeqp"><code>date=?</code></a> to <var>d</var> for all date object values of
+<var>d</var>:</p>
+
+<pre
+>(lambda (d)
+  (call-with-values
+      (lambda () (date-ymd d))
+    make-date)))
+</pre>
+
+<div class="boxed">
+<p><span class="boxed-tag">Note</span>:
+This corresponds to <code>gregorian-from-fixed</code> in <a href="ReingoldAndDerschowitz">RD</a>.
+</p></div>
+
+<div class="feature">
+<span class="category">(srfi NNN date)<br>procedure</span>
+<code class="signature">(<a id="date-year" href="#date-year">date-year</a> <var>date</var>)</code><br>
+<code class="signature">(<a id="date-month" href="#date-month">date-month</a> <var>date</var>)</code><br>
+<code class="signature">(<a id="date-day" href="#date-day">date-day</a> <var>date</var>)</code><br>
+</div>
+
+<p>Returns, respectively, the first, second, and third values that would
+result from applying the <a href="#date-ymd"><code>date-ymd</code></a> procedure to their arguments.</p>
+
+<div class="boxed">
+<p><span class="boxed-tag">Note</span>: The <code>date-year</code> procedure
+is from <a href="#RheingoldAndDerschowitz">RD</a>. The
+other two are conveniences for the corresponding values from <a href="#date-ymd"><code>date-ymd</code></a>,
+and using some internal representations of the data datatype cannot be calculated independently of one another.</p></div>
+
+<div class="feature">
+<span class="category">(srfi NNN date)<br>procedure</span>
+<code class="signature">(<a id="date-to-iso-8601" href="#date-to-iso-8601">date-&gt;iso-8601</a> <var>date</var>)</code><br>
+</div>
+
+<p>Returns a newly-allocated string representing the date from the given
+date object in Gregorian-based ISO 8601 format: the year formatted to
+at least 4 places, with a leading U+002D for years prior to
+1 BC; U+002D; the month formatted to 2 places; a U+002D; and the day of
+the month formatted to 2 places. The year, month, and day are printed
+in decimal with leading 0s if needed for padding.</p>
+
+<p>Note that some consumers and protocols use profiles of ISO 8601 which
+do not accept years before 1 BC or after AD 9999.</p>
+
+<pre
+>(date-&gt;iso-8601 (make-date 1975 12 22)) ⇒ "1975-12-22"</pre>
+
+<div class="boxed">
+<p><span class="boxed-tag">Note</span>:
+No inverse of this or any other ISO 8601 formatting procedure
+is provided, because in practice the complete ISO 8601 specification
+offers very many possible formatting variants and usually only a subset
+or profile of these is used in any specific protocol. Future SRFIs,
+or non-SRFI libraries, should provide parsers for these profiles.</p></div>
+
+<!--
+<h3><code>(date-weekday DATE)</code> — procedure</h3>
+
+<p>Returns the day of the week for the date represented by the given date
+object as an exact integer in the range [0, 6] where 0 is Sunday.</p>
+
+<p>ISSUE: Should there really be both this and <code>date-iso-weekday</code>?</p>
+
+<p>(Reingold and Dershowitz <code>day-of-week-from-fixed</code>.)</p>
+-->
+
+<div class="feature">
+<span class="category">(srfi NNN date)<br>procedure</span>
+<code class="signature">(<a id="date-iso-week" href="#date-iso-week">date-iso-week</a> <var>date</var>)</code><br>
+</div>
+
+<p>Returns the ISO week number for the date represented by the given
+date object.</p>
+
+<pre>(date-iso-week (make-date 1975 12 22)) ⇒ 51</pre>
+
+<div class="boxed">
+<p><span class="boxed-tag">Note</span>: This procedure corresponds
+to <code>week</code> from <a href="#RheingoldAndDerschowitz">RD</a>’s <code>iso-from-fixed</code>.</p></div>
+
+<div class="feature">
+<span class="category">(srfi NNN date)<br>procedure</span>
+<code class="signature">(<a id="date-iso-week-year" href="#date-iso-week-year">date-iso-week-year</a> <var>date</var>)</code><br>
+</div>
+
+<p>Returns the year number in the ISO week calendar for the date represented by the given date object.</p>
+
+<div class="boxed">
+<p><span class="boxed-tag">Note</span>: This procedure corresponds
+to <code>year</code> from <a href="#RheingoldAndDerschowitz">RD</a>’s <code>iso-from-fixed</code>.</p></div>
+
+<div class="feature">
+<span class="category">(srfi NNN date)<br>procedure</span>
+<code class="signature">(<a id="date-iso-weekday" href="#date-iso-weekday">date-iso-weekday</a> <var>date</var>)</code>
+</div>
+
+<p>Returns the day of the week for the date represented by the given date
+object as an exact integer in the range [1, 7] where 1 is Monday.</p>
+
+<!-- <p>ISSUE: Should there really be both this and <code>date-weekday</code>?</p> -->
+
+<div class="boxed">
+<p><span class="boxed-tag">Note</span>: This procedure corresponds
+to <code>code</code> from <a href="#RheingoldAndDerschowitz">RD</a>’s <code>iso-from-fixed</code>.</p></div>
+
+<div class="feature">
+<span class="category">(srfi NNN date)<br>procedure</span>
+<code class="signature">(<a id="date-to-mjd" href="#date-to-mjd">date-&gt;mjd</a> <var>date</var>)</code>
+</div>
+
+<p>Returns the Modified Julian Day number corresponding to the date
+represented by the given date object, as an exact integer.</p>
+
+<div class="boxed">
+<p><span class="boxed-tag">Note</span>: This procedure corresponds
+to <code>mjd-from-fixed</code> in <a href="#RheingoldAndDerschowitz">RD</a>.</p></div>
+
+<div class="feature">
+<span class="category">(srfi NNN date)<br>procedure</span>
+<code class="signature">(<a id="mjd-to-date" href="#mjd-to-date">mjd-&gt;date</a> <var>ei</var>)</code>
+</div>
+
+<p>Returns a date object for the date represented by the Modified Julian Day number <var>mjd</var>.</p>
+
+<div class="boxed">
+<p><span class="boxed-tag">Note</span>: This procedure corresponds
+to <code>fixed-from-mjd</code> in <a href="#RheingoldAndDerschowitz">RD</a>.</p></div>
+
+<div class="feature">
+<span class="category">(srfi NNN date)<br>procedure</span>
+<code class="signature">(<a id="date-to-rata-die" href="#date-to-rata-die">date-&gt;rata-die</a> <var>date</var>)</code>
+</div>
+
+<p>Returns the Rata Die number corresponding to the date represented by the
+given date object, as an exact integer.</p>
+
+<div class="feature">
+<span class="category">(srfi NNN date)<br>procedure</span>
+<code class="signature">(<a id="rata-die-to-date" href="#rata-die-to-date">rata-die-&gt;date</a> <var>ei</var>)</code>
+</div>
+
+<p>Returns a date object for the date represented by the Rata Die number
+<var>ei</var>.</p>
+
+<pre><code
+>;;; Calculate the occurence of Gregorian Easter. This is the date of
+;;; Easter in Catholicism and Protestantism.
+
+(define (first-sunday-after date)
+  (let ((weekday (<a href="#date-iso-weekday">date-iso-weekday</a> date)))
+    (<a href="#rata-die-to-date">rata-die-&gt;date</a>
+     (+ (<a href="#date-to-rata-die">date-&gt;rata-die</a> date)
+        (if (= weekday 7)
+            7
+            (- 7 weekday))))))
+
+(define (gregorian-easter year)
+  (let* ((century (+ (floor-quotient year 100) 1))
+         (epact (modulo (+ 14
+                           (* 11 (modulo year 19))
+                           (- (floor-quotient (* 3 century) 4))
+                           (floor-quotient (+ 5 (* 8 century)) 25))
+                        30))
+         (epact (if (or (zero? epact)
+                        (and (= epact 1) (< 10 (modulo year 19))))
+                    (+ epact 1)
+                    epact))
+         (paschal-moon (<a href="#rata-die-to-date">rata-die-&gt;date</a>
+                        (- (<a href="#date-to-rata-die">date->rata-die</a> (<a href="#make-date">make-date</a> year 4 19))
+                           epact))))
+    (first-sunday-after paschal-moon)))</code></pre>
+
+<div class="feature">
+<span class="category">(srfi NNN date)<br>procedure</span>
+<code class="signature">(<a id="dateeqp" href="#dateeqp">date=?</a>
+<var>date<sub>1</sub></var>
+<var>date<sub>2</sub></var>
+<var>date<sub>3</sub></var> …)</code><br>
+<code class="signature">(<a id="dateltp" href="#dateltp">date&lt;?</a>
+<var>date<sub>1</sub></var>
+<var>date<sub>2</sub></var>
+<var>date<sub>3</sub></var> …)</code><br>
+<code class="signature">(<a id="dateltep" href="#dateltep">date&lt;=?</a>
+<var>date<sub>1</sub></var>
+<var>date<sub>2</sub></var>
+<var>date<sub>3</sub></var> …)</code><br>
+<code class="signature">(<a id="dategtp" href="#dategtp">date&gt;?</a>
+<var>date<sub>1</sub></var>
+<var>date<sub>2</sub></var>
+<var>date<sub>3</sub></var> …)</code><br>
+<code class="signature">(<a id="dategtep" href="#dategtep">date&gt;=?</a>
+<var>date<sub>1</sub></var>
+<var>date<sub>2</sub></var>
+<var>date<sub>3</sub></var> …)</code><br>
+</div>
+
+<p>These procedures measure whether one date is before, the same as, or
+after another. The <code>date=?</code> procedure returns <code>#t</code>
+if the date objects it is given refer to the same date and <code>#f</code>
+otherwise. The <code>date&lt;?</code> returns <code>#t</code> if the
+each date is strictly before the next dates in the argument list. The
+other procedures are defined in the usual way accordingly.</p>
+
+<h3>Gregorian calendar utilities</h3>
+
+<p>
+  These implementation operations specific to the Gregorian calendar.
+</p>
+
+<div class="feature">
+<span class="category">(srfi NNN gregorian)<br>procedure</span>
+<code class="signature">(<a id="leap-yearp" href="#leap-year">leap-year?</a> <var>ei</var>)</code><br>
+</div>
+
+<p>
+  Return <code>#t</code> if <var>ei</var> is a Gregorian leap year,
+  i.e., years such that February 29<sup>th</sup> is a valid date.
+</p>
+
+<div class="feature">
+<span class="category">(srfi NNN gregorian)<br>procedure</span>
+<code class="signature">(<a id="day-name-to-weekday"
+                            href="#day-name-to-weekday"
+>day-name-&gt;weekday</a> <var>symbol</var>)</code><br>
+</div>
+
+<p>
+ It is an error if <var>symbol</var> is not one of
+ <code>monday</code>
+ <code>tuesday</code>
+ <code>wednesday</code>
+ <code>thursday</code>
+ <code>friday</code>
+ <code>saturday</code>
+ or
+ <code>sunday</code>.
+</p>
+
+<p>
+  Convert the symbol to the appropriate ISO weekday number.
+</p>
+
+<div class="boxed">
+<p><span class="boxed-tag">Rationale</span>: This procedure allows
+the programmer to use the common English names for the weekdays
+instead of the number equivalent. These are not meant for display,
+and as such only English versions are used.
+</p></div>
+
+<div class="feature">
+<span class="category">(srfi NNN gregorian)<br>procedure</span>
+<code class="signature">(<a id="days-in-month"
+                            href="#days-in-month"
+>days-in-month</a> <var>year</var> <var>month</var>)</code><br>
+</div>
+
+<p>
+  Return the number of days in <var>month</var> in the Gregorian
+  year <var>year</var>. On leap years, the number of days in
+  Februrary is 29, and in non-leap-years, the number of days is
+  28.
+</p>
+
+<div class="feature">
+<span class="category">(srfi NNN gregorian)<br>procedure</span>
+<code class="signature">(<a id="nth-in-month"
+                            href="#nth-in-month"
+>nth-in-month</a> <var>year</var> <var>month</var> <var>weekday</var> <var>k</var>)</code><br>
+</div>
+
+<p>
+  Return the day of the month that the <var>k</var>th appearance of the
+  <var>weekday</var> (interpreted as an ISO weekday; see
+  <a href="#date-iso-weekday"><code>date-iso-weekday</code></a>).
+  If there is no such appearance, return <code>#f</code>.
+</p>
+
+
+<pre><code
+>;;; Calculates the number of complete weeks in a Gregorian month.
+(define (complete-weeks year month)
+  (let*-values (((first-sunday) (<a href="#nth-in-month">nth-in-month</a> year month 7 1))
+                ((sundays rem) (floor/ (- (<a href="#days-in-month">days-in-month</a> year month)
+                                          first-sunday
+                                          1)
+                                       7)))
+    (+ sundays (if (= rem 6) 1 0))))
+
+;;; Calculate the date of American Thanksgiving.
+(define (thanksgiving year)
+  (<a href="#make-date">make-date</a> year 11 (<a href="#nth-in-month">nth-in-month</a> year 11 4)))
+
+;;; Calculate the timestamp of the American DST transition.
+(define (american-dst year standard-timezone)
+  (<a href="#date-and-clock-time-to-timestamp">date+clock-time-&gt;timestamp</a>
+   (<a href="#make-date">make-date</a> year 3 (<a href="#nth-in-month">nth-in-month</a> year 3 7 2))
+   (<a href="#make-clock-time">make-clock-time</a> 2 0 0)
+   standard-timezone))</code></pre>
+
+<div class="feature">
+<span class="category">(srfi NNN gregorian)<br>procedure</span>
+<code class="signature">(<a id="nth-in-month"
+                            href="#nth-in-month"
+>last-in-month</a> <var>year</var> <var>month</var> <var>weekday</var>)</code><br>
+</div>
+
+<p>
+  Return the day of the month that the last appearance of the
+  <var>weekday</var> (interpreted as an ISO weekday; see
+  <a href="#date-iso-weekday"><code>date-iso-weekday</code></a>).
+</p>
+
+<h3>Clock times</h3>
+
+<p>A <dfn>clock time</dfn> represents the time of day independently of any time zone. As
+with dates, some events are scheduled at certain times of day no matter
+which time zone the observer of that event happens to be in. <!-- ‘Babylonian
+time’, in its UTC-adjusted variant, is even more universal than the
+Gregorian calendar;--> No particular accommodation is made for alternative
+clock systems, though it should be relatively easy to convert from any
+astronomical notion of hours to this variant.</p>
+
+<p>A clock time object has three components, respectively the hour of the
+day, minute of the hour, and second of the minute. The hour is in the
+range [0, 24); the minute in the range [0, 60), and the second in the
+range [0, 61). The hour and minute are stored and returned as exact
+integers, and the second as an exact rational.</p>
+
+<p>A clock time object corresponds to a complete representation of a local
+time of day in ISO 8601 (section 5.3.1.2 of ISO 8601:2019), potentially
+with a fractional part of a second (section 5.3.1.2.a of ISO 8601:2019).</p>
+
+<p>
+  Because clock time is periodic (is 11:59 PM earlier or later than 12:01 AM?)
+  there are no comparison procedures for clock times.
+</p>
+
+<div class="feature">
+<span class="category">(srfi NNN clock-time)<br>procedure</span>
+<code class="signature">(<a id="make-clock-time" href="#make-clock-time">make-clock-time</a> <var>hour</var> <var>minute</var> <var>second</var>)</code>
+</div>
+
+<p>Returns a clock time object with the given <var>hour</var>, <var>minute</var>, and <var>second</var>
+values.</p>
+
+<div class="feature">
+<span class="category">(srfi NNN clock-time)<br>procedure</span>
+<code class="signature">(<a id="clock-timep" href="#clock-timep">clock-time?</a> <var>obj</var>)</code>
+</div>
+
+<p>Returns <code>#t</code> if <var>obj</var> is a clock time object, or <code>#f</code> otherwise.</p>
+
+<div class="feature">
+<span class="category">(srfi NNN clock-time)<br>procedure</span>
+<code class="signature">(<a id="clock-time-hms" href="#clock-time-hms">clock-time-hms</a> <var>clock-time</var>)</code>
+</div>
+
+<p>Returns three values: the hour, month, and second respectively of the
+clock time object <var>clock-time</var>.</p>
+
+<div class="feature">
+<span class="category">(srfi NNN clock-time)<br>procedure</span>
+<code class="signature">(<a id="clock-time-hour" href="#clock-time-hour">clock-time-hour</a> <var>clock-time</var>)</code><br>
+<code class="signature">(<a id="clock-time-minute" href="#clock-time-minute">clock-time-minute</a> <var>clock-time</var>)</code><br>
+<code class="signature">(<a id="clock-time-second" href="#clock-time-second">clock-time-second</a> <var>clock-time</var>)</code><br>
+</div>
+
+<p>Convenience procedures for retrieving the hour, minute, and second from
+<var>clock-time</var> respectively.</p>
+
+<h3>Moments</h3>
+
+<p>Moments are instants within the TAI timescale, represented using the TAI
+calendar — that is, they can be decomposed into a date and a count
+of seconds, although (as of writing, and for the foreseeable future)
+that count of seconds will appear to be going slightly fast compared to
+UTC-based civil time (for which see next section).</p>
+
+<p>The count of seconds is a nonnegative exact rational in the range [0,
+86,400). Moments can therefore be measured with arbitrary precision,
+although computer time-keeping is rarely done with more than nanosecond
+precision, and is rarely accurate to more than a few milliseconds.</p>
+
+<p>In order to discourage mistaken use of moments to display time values
+intended to be civil times, direct accessors for the Gregorian calendar
+values of year, month, and day are not provided.</p>
+
+<div class="boxed">
+<p><span class="boxed-tag">Note</span>:
+ISO 8601 does not define a serialization form for dates on the TAI
+timescale, because TAI is officially a count of seconds with no notion
+of minutes, hours, or days.</p></div>
+
+<div class="feature">
+<span class="category">(srfi NNN moment)<br>procedure</span>
+<code class="signature">(<a id="make-moment" href="#make-moment">make-moment</a> <var>date</var> <var>seconds</var>)</code><br>
+</div>
+
+<p>Returns a moment corresponding to <var>seconds</var> seconds into the given <var>date</var>
+in the TAI calendar.</p>
+
+<div class="feature">
+<span class="category">(srfi NNN moment)<br>procedure</span>
+<code class="signature">(<a id="momentp" href="#momentp">moment?</a> <var>obj</var>)</code><br>
+</div>
+
+<p>Returns <code>#t</code> if <var>obj</var> is a moment object, or <code>#f</code> otherwise.</p>
+
+<div class="feature">
+<span class="category">(srfi NNN moment)<br>procedure</span>
+<code class="signature">(<a id="moment-date" href="#moment-date">moment-date</a> <var>moment</var>)</code><br>
+</div>
+
+<p>Returns a date object for the day in the TAI calendar (as defined above)
+represented by the given moment object.</p>
+
+<div class="feature">
+<span class="category">(srfi NNN moment)<br>procedure</span>
+<code class="signature">(<a id="moment-second-of-day" href="#moment-second-of-day">moment-second-of-day</a> <var>moment</var>)</code><br>
+</div>
+
+<p>Returns an exact rational in the range [0, 86400) representing the second
+of the day in the TAI calendar which the given moment object represents.</p>
+
+<div class="feature">
+<span class="category">(srfi NNN moment)<br>procedure</span>
+<code class="signature">(<a id="momenteqp" href="#momenteqp">moment=?</a>
+<var>moment<sub>1</sub></var>
+<var>moment<sub>2</sub></var>
+<var>moment<sub>3</sub></var> …)</code><br>
+<code class="signature">(<a id="momenteqp" href="#momenteqp">moment&lt;?</a>
+<var>moment<sub>1</sub></var>
+<var>moment<sub>2</sub></var>
+<var>moment<sub>3</sub></var> …)</code><br>
+<code class="signature">(<a id="momenteqp" href="#momenteqp">moment&lt;=?</a>
+<var>moment<sub>1</sub></var>
+<var>moment<sub>2</sub></var>
+<var>moment<sub>3</sub></var> …)</code><br>
+<code class="signature">(<a id="momenteqp" href="#momenteqp">moment&gt;?</a>
+<var>moment<sub>1</sub></var>
+<var>moment<sub>2</sub></var>
+<var>moment<sub>3</sub></var> …)</code><br>
+<code class="signature">(<a id="momenteqp" href="#momenteqp">moment&gt;=?</a>
+<var>moment<sub>1</sub></var>
+<var>moment<sub>2</sub></var>
+<var>moment<sub>3</sub></var> …)</code><br>
+</div>
+
+
+<p>These procedures measure whether one moment is before, the same as, or
+after another. The <code>moment=?</code> procedure returns <code>#t</code> if the moment objects 
+represent exactly the same date and second measurement in
+the TAI calendar. The <code>moment&lt;?</code> procedure returns <code>#t</code> if either the date measurement
+in <var>moment<sub>1</sub></var> is the less than the date measurement in <var>moment<sub>2</sub></var>, or if
+the date measurement in <var>moment<sub>1</sub></var> is the same as the date measurement in
+<var>moment<sub>2</sub></var> but the seconds measurement in <var>moment<sub>1</sub></var> is less than the
+seconds measurement in <var>moment<sub>2</sub></var>, and so on. The other procedures are defined in
+the usual way accordingly and are required to be transitive.</p>
+
+<h3>Timestamps</h3>
+
+<p><dfn>Timestamps</dfn> are what humans usually think of as dates and times. They
+are instants within a specific local timescale which, for the sake of
+convenience, is taken to be derived from TAI by way of UTC. (In some
+places, the official local time zone is defined by reference to mean
+solar time, but computer time-keeping invariably ignores the distinction.)</p>
+
+<p>Every timestamp corresponds unambiguously to a single
+moment. Representationally, timestamps are a combination of a date with
+an hour in the range [0, 24), a minute in the range [0, 60), and a second
+in the range [0, 61), plus a time zone. The time zone may be interpreted
+in two ways to yield an unambiguous moment: either as a simple offset
+from UTC applicable at the corresponding moment of the timestamp; or as
+a dynamic set of rules applicable at different times.</p>
+
+<p>Although procedures to compare the corresponding moments of two timestamps
+are theoretically unambiguous, they are not directly provided because
+of the unclarity of the hypothetical <code>timestamp=?</code> procedure: should it consider two
+timestamps the same if they have the same corresponding moment even
+if their time zones are different? Considered in the context of the
+less-than or greater-than operators, it seems so; but strictly, those
+timestamps are not the same as one another: adding two time-deltas
+to these timestamps may result in different moments. So users must explicitly
+convert to moments and use the moment comparison procedures.</p>
+
+<p>A timestamp object corresponds to a complete representation for calendar
+date and time of day in ISO 8601 (section 5.4.2.1 of ISO 8601:2019);
+a timestamp always includes a time zone component, which, as an extension
+to ISO 8601, may consist of information about the periods of validity
+of time shift designators for producers or consumers of date and time
+information.</p>
+
+<div class="feature">
+<span class="category">(srfi NNN timestamp)<br>procedure</span>
+<code class="signature">(<a id="make-timestamp" href="#make-timestamp">make-timestamp</a>
+<var>year</var>
+<var>month</var>
+<var>day</var>
+<var>hour</var>
+<var>minute</var>
+<var>second</var>
+<var>timezone</var>
+[<var>fold</var>]
+)</code><br>
+</div>
+
+<p>If not given, <var>fold</var> defaults to 0.</p>
+
+<p>
+  Constructs a timezone object with the corresponding fields.
+  For information about <var>fold</var>, see
+  <a href="#timestamp-fold"><code>timestamp-fold</code></a>.
+</p>
+
+<p>
+  If the constructed timestamp does not refer to any time on the TAI
+  scale, an error is signaled.
+</p>
+
+<div class="boxed">
+<p><span class="boxed-tag">Note</span>:
+  It is possible for a seemingly valid timestamp to not be valid in
+  certain timezomes. For example, the times 2:00 to 2:59 did not exist
+  on March 8<sup>th</sup>, 2026 in Eastern Time, because at 2:00 EST on
+  March 8<sup>th</sup>, 2026, the Eastern United States did its annual
+  switch to Eastern Daylight Time. These sort of clock changes may be
+  unpredicatable.
+</p></div>
+
+<div class="feature">
+<span class="category">(srfi NNN timestamp)<br>procedure</span>
+<code class="signature">(<a id="date-and-clock-time-to-timestamp" href="#date-and-clock-time-to-timestamp"
+>date+clock-time-&gt;timestamp</a>
+<var>date</var>
+<var>clock-time</var>
+<var>timezone</var>
+[<var>fold</var>]
+)</code><br>
+</div>
+
+<p>
+  Equivalent to
+  <a href="#make-timestamp"><code>make-timestamp</code></a>, using the
+  appropriate accessors for <var>date</var> and <var>clock-time</var>.
+</p>
+
+<div class="feature">
+<span class="category">(srfi NNN timestamp)<br>procedure</span>
+<code class="signature">(<a id="timestampp" href="#timestampp">timestamp?</a> <var>obj</var>)</code>
+<div>
+
+<p>Returns <code>#t</code> if <var>obj</var> is a timestamp object,
+and <code>#f</code> if <var>obj</var> is any other object.</p>
+
+<div class="feature">
+<span class="category">(srfi NNN timestamp)<br>procedure</span>
+<code class="signature">(<a id="moment-to-timestamp" href="#moment-to-timestamp">moment-&gt;timestamp</a>
+<var>moment</var> <var>timezone</var>)</code>
+<div>
+
+<p>Returns a timestamp object reflecting the civil time in the time zone
+<var>timezone</var> at the instant represented by <var>moment</var>.</p>
+
+<div class="feature">
+<span class="category">(srfi NNN timestamp)<br>procedure</span>
+<code class="signature">(<a id="timestamp-to-moment" href="#timestamp-to-moment">timestamp-&gt;moment</a>
+<var>timestamp</var>)</code>
+<div>
+
+<p>Returns a moment object corresponding to the instant when <var>timestamp</var>
+was observed in its time zone.</p>
+
+<div class="feature">
+<span class="category">(srfi NNN timestamp)<br>procedure</span>
+<code class="signature">(<a id="timestamp-in-timezone" href="#timestamp-in-timezone">timestamp-in-timezone</a>
+<var>timestamp</var> <var>timezone</var>)</code>
+<div>
+
+<p>Perform a time zone conversion on a timestamp, returning a timestamp
+which reflects the same corresponding moment but with a different time
+zone. Equivalent to:</p>
+
+<pre
+>(moment-&gt;timestamp (timestamp-&gt;moment <var>timestamp</var>) <var>timezone</var>)</pre>
+
+<div class="feature">
+<span class="category">(srfi NNN timestamp)<br>procedure</span>
+<code class="signature">(<a id="posix-time-to-utc-timestamp"
+                            href="#posix-time-to-utc-timestamp">posix-time-&gt;utc-timestamp</a>
+<var>posix-seconds</var> [<var>nanoseconds</var>])</code>
+<div>
+
+<p>Return a timestamp in the UTC time zone corresponding to the given POSIX
+time (a count of seconds since 1 January 1970, minus leap seconds).</p>
+
+<p> If <var>nanoseconds</var> is not given and error if
+<var>posix-seconds</var> is not an exact or inexact rational, then an
+error is signaled. If <var>nanoseconds</var> is given and if either
+<var>posix-seconds</var> or <var>nanoseconds</var> are not exact
+integers, then an error is signaled.</p>
+
+<p>
+  If the POSIX time corresponds to a number that does not have a TAI
+  equivalent (which can only happen if negative leap seconds are
+  introduced), then an error is signalled.
+</p>
+
+<!--
+<p>EXAMPLE: Having obtained a POSIX timespec from, for example, a <code>stat</code>
+operation on a file to obtain the last-modified date, the following code
+will get a timestamp for it in the user’s local time zone.</p>
+
+<p><code>scheme
+(timestamp-in-timezone (posix-time-&gt;utc-timestamp tv-sec tv-nsec)
+                       (system-timezone))
+</code></p>
+-->
+
+<div class="feature">
+<span class="category">(srfi NNN timestamp)<br>procedure</span>
+<code class="signature">(<a id="timestamp-to-utc-posix-time"
+                            href="#timestamp-to-utc-posix-time">timestamp-&gt;utc-posix-time</a>
+<var>timestamp</var>)</code>
+<div>
+
+<p>Returns an exact rational representing the <var>timestamp</var> as a count of
+seconds since midnight UTC on 1 January 1970, minus leap seconds. The
+timestamp object may be in any time zone. If the <var>timestamp</var> corresponds
+to a moment that is within a leap second (i.e. if the result of the
+<var>timestamp-second</var> procedure is greater than or equal to 60), one second
+is subtracted from the <var>timestamp</var> before the conversion takes place.</p>
+
+<div class="boxed">
+<p><span class="boxed-tag">Note</span>:
+The fact that the names of this procedure and of <a
+href="#posix-time-to-utc-timestamp"><code>posix-time-&gt;utc-timestamp</code></a>
+are not perfect inverses is intended to reflect the fact that the two do
+not round-trip losslessly because of the leap second problem with POSIX
+time. Thus, doing a wrong thing (attempting a round trip conversion in
+the expectation of losslessness) will look wrong.</p></div>
+
+<div class="feature">
+<span class="category">(srfi NNN timestamp)<br>procedure</span>
+<code class="signature">(<a id="timestamp-date"
+                            href="#timestamp-date">timestamp-date</a>
+<var>timestamp</var>)</code>
+<div>
+
+<p>Return a date object for the date represented by the timestamp object. The
+returned date object is not guaranteed to be the same as any other date
+object in the sense of <code>eqv?</code> or <code>eq?</code>, including date objects returned
+by previous invocations of this procedure on the same timestamp object.</p>
+
+<div class="feature">
+<span class="category">(srfi NNN timestamp)<br>procedure</span>
+<code class="signature">(<a id="timestamp-ymd"
+                            href="#timestamp-ymd">timestamp-ymd</a>
+<var>timestamp</var>)</code><br>
+<code class="signature">(<a id="timestamp-year"
+                            href="#timestamp-year">timestamp-year</a>
+<var>timestamp</var>)</code><br>
+<code class="signature">(<a id="timestamp-month"
+                            href="#timestamp-month">timestamp-month</a>
+<var>timestamp</var>)</code><br>
+<code class="signature">(<a id="timestamp-day"
+                            href="#timestamp-day">timestamp-day</a>
+<var>timestamp</var>)</code>
+<div>
+
+<p>Convenience procedures which are respectively the equivalents of:</p>
+
+<pre
+>(date-ymd (timestamp-date <var>timestamp</var>))
+(date-year (timestamp-date <var>timestamp</var>))
+(date-month (timestamp-date <var>timestamp</var>))
+(date-day (timestamp-date <var>timestamp</var>))
+</pre>
+
+<div class="feature">
+<span class="category">(srfi NNN timestamp)<br>procedure</span>
+<code class="signature">(<a id="timestamp-clock-time"
+                            href="#timestamp-clock-time">timestamp-clock-time</a>
+<var>timestamp</var>)</code>
+</div>
+
+<p>Returns a clock-time object representing the hour, minute, and second of
+the date represented by the timestamp. The returned date object is not
+guaranteed to be the same as any other clock-time object in the sense
+of <code>eqv?</code> or <code>eq?</code>, including clock-time objects returned by previous
+invocations of this procedure on the same timestamp object.</p>
+
+<div class="feature">
+<span class="category">(srfi NNN timestamp)<br>procedure</span>
+<code class="signature">(<a id="timestamp-hms"
+                            href="#timestamp-hms">timestamp-hms</a>
+<var>timestamp</var>)</code><br>
+<code class="signature">(<a id="timestamp-hour"
+                            href="#timestamp-hour">timestamp-hour</a>
+<var>timestamp</var>)</code><br>
+<code class="signature">(<a id="timestamp-minute"
+                            href="#timestamp-minute">timestamp-minute</a>
+<var>timestamp</var>)</code><br>
+<code class="signature">(<a id="timestamp-second"
+                            href="#timestamp-second">timestamp-second</a>
+<var>timestamp</var>)</code>
+<div>
+
+<p>Convenience procedures which are respectively the equivalents of:</p>
+
+<pre
+>(clock-time-hms (timestamp-clock-time <var>timestamp</var>))
+(clock-time-hour (timestamp-clock-time <var>timestamp</var>))
+(clock-time-minute (timestamp-clock-time <var>timestamp</var>))
+(clock-time-second (timestamp-clock-time <var>timestamp</var>))</pre>
+
+<div class="feature">
+<span class="category">(srfi NNN timestamp)<br>procedure</span>
+<code class="signature">(<a id="timestamp-timezone"
+                            href="#timestamp-timezone">timestamp-timezone</a>
+<var>timestamp</var>)</code><br>
+</div>
+
+<p>Returns the time zone object which is used to calculate the corresponding
+moment. Unlike <a href="#timestamp-date"><code>timestamp-date</code></a>
+and <a href="#timestamp-clock-time"><code>timestamp-clock-time</code></a>, the returned
+object is guaranteed to be the same in the sense of <code>eqv?</code> as the time
+zone object that was passed to the procedure which originally constructed
+the timestamp object.</p>
+
+<div class="feature">
+<span class="category">(srfi NNN timestamp)<br>procedure</span>
+<code class="signature">(<a id="timestamp-fold"
+                            href="#timestamp-fold">timestamp-fold</a>
+<var>timestamp</var>)</code><br>
+</div>
+
+<p>Return an exact integer 0 or 1 representing the number of times this
+timestamp has repeated within the time zone (considered as a time zone
+object, not as an offset) at the corresponding moment. This integer is
+almost always 0 except immediately following a switch from summer time to
+winter time. In particular, if the time zone object used in the timestamp
+consists only of a fixed offset, this procedure always returns 0.</p>
+
+<div class="feature">
+<span class="category">(srfi NNN timestamp)<br>procedure</span>
+<code class="signature">(<a id="timestamp-timezone-offset"
+                            href="#timestamp-timezone-offset">timestamp-timezone-offset</a>
+<var>timestamp</var>)</code><br>
+</div>
+
+<p>Returns a time delta object representing the offset from UTC in effect
+in the timestamp’s timezone at the corresponding moment.</p>
+
+<div class="feature">
+<span class="category">(srfi NNN timestamp)<br>procedure</span>
+<code class="signature">(<a id="timestamp-timezone-abbreviation"
+                            href="#timestamp-timezone-abbreviation">timestamp-timezone-abbreviation</a>
+<var>timestamp</var>)</code><br>
+</div>
+
+<p>
+  Returns a string that is an abbreviation of the name of the timezone, or
+  <code>#f</code> if no abbreviation is available.
+</p>
+
+<div class="boxed">
+<p><span class="boxed-tag">Note</span>: The returned string corresponds to
+the “time zone designation” in an RFC9636 TZif database file. Note that
+the returned time zone designation may be ambiguous: for example,
+IST can refer to India Standard Time, Ireland Standard Time, or
+Israel Standard Time.</p></div>
+
+<div class="feature">
+<span class="category">(srfi NNN timestamp)<br>procedure</span>
+<code class="signature">(<a id="timestamp-timezone-dstp"
+                            href="#timestamp-timezone-dst">timestamp-timezone-dst?</a>
+<var>timestamp</var>)</code><br>
+</div>
+
+<p>
+  Return <code>#t</code> if the <var>timezone</var> is considered to
+  be in daylight savings time, and <code>#f</code> otherwise.
+</p>
+
+<div class="boxed">
+<p><span class="boxed-tag">Note</span>: Many locations do not observe
+daylight savings time. Some US states, such as Florida and Washington,
+want to switch to permanent daylight savings time. The value of this
+flag should be taken from the appropriate field in the timezone
+database.</p></div>
+
+<div class="feature">
+<span class="category">(srfi NNN timestamp)<br>procedure</span>
+<code class="signature">(<a id="timestamp-to-iso-8601"
+                            href="#timestamp-to-iso-8601">timestamp-&gt;iso-8601</a>
+<var>timestamp</var>)</code><br>
+</div>
+
+<p>Returns a newly-allocated string containing the date and time specified
+by the given <var>timestamp</var> together with the offset from UTC in hours,
+minutes, and possibly seconds.</p>
+
+<p>The first part of the returned string consists of the ISO 8601 formatted
+date for the timestamp, exactly as if
+<a href="#date-to-iso-8601"><code>date-&gt;iso-8601</code></a> had been called
+on the result of applying <a href="#timestamp-date"><code>timestamp-date</code></a> to the timestamp object. Then
+follows U+0054 (<code>T</code>); the hour formatted to 2 places;
+U+003A (<code>-</code>); the minute formatted to two places; U+003A (<code>-</code>);
+and the integral part of the second formatted to two places.</p>
+
+<p>If the second is not an exact integer, there follows a U+002E
+(<code>.</code>)
+followed by the fractional part of the second. Because
+seconds in a timestamp are represented as an exact rational, it may
+not be possible to convert them exactly to a terminating decimal
+number. This procedure must therefore format seconds to at
+most nanosecond precision. If the fractional part of the second can
+be precisely represented in fewer than 9 places, there must be no
+trailing zeroes.</p>
+
+<p>Then follows the time zone part, which is formatted as follows. If the
+time delta object resulting from calling
+<a href="#timestamp-timezone-offset"><code>timestamp-timezone-offset</code></a> on
+the timestamp object is equivalent to a duration of zero seconds, the time
+zone part must be a single U+005A (<code>Z</code>). If the time
+delta object contains a seconds part or a part for any time unit greater
+than or equal to 24 hours, an error is signaled. If the
+time delta is negative, there follows a U+002D (<code>-</code>), otherwise a
+U+002B (<code>+</code>); then the hours part of the time delta formatted to two
+places; a U+003A (<code>:</code>); and the minutes part of the time delta formatted
+to two places.</p>
+
+<div class="boxed">
+<p><span class="boxed-tag">Note</span>:
+The formatting rules described here are compatible with the IETF
+and W3C date-time formats, except that, as noted under
+<a href="#date-to-iso-8601"><code>date-&gt;iso-8601</code></a>,
+these profiles of ISO 8601 do not support BC or far-future AD dates.
+<!-- DPK/jcowan(?): The author of this specification considers this a bug in those profiles. -->
+While
+some historical time zones do include a seconds part, these may not be
+represented even in the full ISO 8601 format.</p></div>
+
+<p>See the remark under <a
+href="#date-to-iso-8601"><code>date-&gt;iso-8601</code></a> on why no
+inverse of this procedure is provided.</p>
+
+<h3>Time zones</h3>
+
+<p>A <dfn>time zone</dfn> is a set of rules for calculating local
+clock-times in some specific location. It is usually an offset from UTC
+and a dynamic set of rules for determining when a location changes from
+one offset to another for its local time, either according to standard
+rules (as for daylight savings/summer time in most of the world) or
+according to one-off political changes (as for summer time in the United
+Kingdom before the 1990s, or for more permanent alterations, such as
+countries in the Pacific Ocean deciding to hop to the other side of the
+International Date Line).</p>
+
+<p>A time zone object is modelled on entries from the Olson/ICANN tz
+database, but on operating systems which provide some other means of
+finding time zone change information it should be possible to provide a
+useful implementation of timestamps and time zones with the information
+they provide.</p>
+
+<div class="boxed">
+<p><span class="boxed-tag">Note</span>: When converting between
+timestamps, which are based on UTC, and moments, which are based on
+TAI, time zone data from the Olson/ICANN tz database should be taken
+from the <code>right</code> variant of each time zone, not the default
+<code>posix</code> variant. Note that some operating systems do not
+include the <code>right</code> versions of the time zone data; in this
+case, the <code>leapseconds</code> file should provided anyway, and will
+have to be combined with the default <code>posix</code> data.</p></div>
+
+<div class="feature">
+<span class="category">(srfi NNN timezone)<br>procedure</span>
+<code class="signature">(<a id="timezonep"
+                            href="#timezonep">timezone?</a>
+<var>obj</var>)</code><br>
+</div>
+
+<p>Returns <code>#t</code> if <var>obj</var> is a time zone object and <code>#f</code> otherwise.</p>
+
+<div class="feature">
+<span class="category">(srfi NNN timezone)<br>procedure</span>
+<code class="signature">(<a id="utc-timezone"
+                            href="#utc-timezone">utc-timezone</a>)</code>
+</div>
+
+<p>A time zone which adds leap seconds to TAI only.</p>
+
+<div class="feature">
+<span class="category">(srfi NNN timezone)<br>procedure</span>
+<code class="signature">(<a id="utc-offset-timezone"
+                            href="#utc-offset-timezone">utc-offset-timezone</a>
+<var>time-delta</var>)</code>
+</div>
+
+<p>Returns a time zone objects which is consistently offset from UTC by
+the amount of time specified by the time-delta object <var>time-delta</var>. The new
+time zone object is guaranteed to be distinct from all existing time
+zone objects in the sense of the <code>eqv?</code> procedure.</p>
+
+<p>It is an error if <var>time-delta</var> does not have zero components
+for everything except the hour and the minute.</p>
+
+<div class="boxed">
+<p><span class="boxed-tag">Rationale</span>:
+This procedure is intended to be used only in unparsing dates
+from formats such as ISO 8601, which include an offset from UTC but
+not location information. Note that any date and time arithmetic done
+on a timestamp created this way is not guaranteed to correctly reflect
+local time in the location of the person who generated the time string,
+because the offset from UTC in that location might be different at the
+moment for the calculated timestamp than at the moment when the timestamp
+was created.</p></div>
+
+<!--
+<div class="feature">
+<span class="category">(srfi NNN timezone)<br>procedure</span>
+<code class="signature">(<a id="utc-offset-timezone"
+                            href="#utc-offset-timezone">utc-offset-timezone</a>
+<var>string<sub>std</sub></var>
+<var>time-delta<sub>std</sub></var>
+[<var>string<sub>dst</sub></var>
+ <var>time-delta<sub>dst</sub></var>
+ [<var>date<sub>std</sub></var>
+  <var>clock-time<sub>std</sub></var>
+ [<var>date<sub>dst</sub></var>
+  <var>clock-time<sub>dst</sub></var>]]]
+)</code>
+</div>
+
+<p>
+  Returns a time zone objects which is offset from UTC by
+  <var>time-delta<sub>std</sub></var>, except on the date
+  <var>date<sub>std</sub></var> and time <var>clock-time<sub>std</sub></var>,
+  it switches to the offset
+  <var>time-delta<sub>dst</sub></vr>,
+  switching back when the date and clock time becomes
+  <var>date<sub>dst</sub></var> and <var>clock-time<sub>dst</sub></var>.
+</p>
+
+<div class="boxed">
+<p>
+<span class="boxed-tag">Rationale</span>:
+This procedure is intended to be used only in legacy formats such as the
+<code>TZ</code> environment variable, which include this information but
+no historical information. As such, it may not be accurate for past or
+future timestamps.
+</p>
+</div>
+-->
+
+<div class="feature">
+<span class="category">(srfi NNN timezone)<br>procedure</span>
+<code class="signature">(<a id="timezone-earliest"
+                            href="#timezone-earliest">timezone-earliest</a>
+<var>timezone</var>)</code>
+</div>
+
+<p>
+  Return the moment that is the earliest entry in the timezones
+  transition list. Moments prior to this are based off of projection
+  of the earliest entry, and may be less accurate due to a lack of
+  historical data.
+</p>
+
+<p>
+  If the timezone is definitionally accurate for all previous times
+  (for example, a fixed offset from UTC), then this procedure returns
+  <code>#f</code>.
+</p>
+
+<div class="feature">
+<span class="category">(srfi NNN timezone)<br>procedure</span>
+<code class="signature">(<a id="timezone-latest"
+                            href="#timezone-latest">timezone-latest</a>
+<var>timezone</var>)</code>
+</div>
+
+<p>
+  Return the moment that is the latest entry in the timezones transition
+  list. Moments subsequent to this are based off of projection from
+  the latest entry and known regular timezone changes (such as daylight
+  savings time), and may not be accurate due to unpredictable changes
+  such as new laws.
+</p>
+
+<p>
+  If a timezone is a fixed offset from UTC, then the latest moment
+  is the expiry of the leap second table.
+</p>
+
+<p>
+  If the timezone is definitionally accurate for all subsequent times
+  (for example, a fixed offset from UTC when leap seconds have been
+  abolished), then this procedure returns
+  <code>#f</code>.
+</p>
+
+<div class="feature">
+<span class="category">(srfi NNN tzdb)<br>procedure</span>
+<code class="signature">(<a id="reload-timezone-data"
+                            href="#reload-timezone-data"
+                         >reload-timezone-data!</a>)</code>
+</div>
+
+<p>
+  Force-reload all relevant timezone data, such as the current system
+  timezone and the timezone database.
+</p>
+
+<div class="boxed">
+<p><span class="boxed-tag">Note</span>: If the implementation does not
+read timezone data from the system, this procedure likely does nothing.
+As stated above, the implementation should do the equivalent of calling
+this procedure once every 24 hours to update the timezone database.
+</p></div>
+
+<div class="feature">
+<span class="category">(srfi NNN timezone)<br>procedure</span>
+<code class="signature">(<a id="system-timezone"
+                            href="#system-timezone">system-timezone</a>)</code>
+</div>
+
+<p>
+  Returns a time zone object corresponding to the current operating system
+  or user time zone setting.
+</p>
+
+<p>
+  This setting should read from the <code>TZ</code> environment variable.
+</p>
+
+<div class="feature">
+<span class="category">(srfi NNN tzdb)<br>procedure</span>
+<code class="signature">(<a id="tz-timezone"
+                            href="#tz-timezone">tz-timezone</a> <var>string</var>)</code>
+</div>
+
+<p>Returns a time zone object corresponding to the Olson/ICANN tz database
+entry for <var>string</var>. An error is signaled if the time zone
+<var>string</var> is not known to the system.</p>
+
+<div class="feature">
+<span class="category">(srfi NNN tzdb)<br>procedure</span>
+<code class="signature">(<a id="tz-timezones"
+                            href="#tz-timezones">tz-timezones</a>)</code>
+</div>
+
+<p>Returns a list of the names of all Olson/ICANN tz database entries known
+to the system as strings, i.e. all strings that would be valid argument
+to the <a href="#tz-timezone"><code>tz-timezone</code></a> procedure, in an unspecified order.</p>
+
+<p>
+  An implementation should consult the environment variable
+  <code>TZPATH</code> for the location of the timezone database.
+</p>
+
+<h3>Time-deltas</h3>
+
+<p>A <var>time-delta</var> represents a measurement of an amount of time, although
+they do not necessarily represent an actual duration of time on the
+absolute TAI or UTC time scale, except maybe in an abstract sense. (A
+time-delta used to represent a time zone offset could be interpreted as
+meaning ‘when it is midnight in UTC, you will have to wait minus this
+time delta amount of time before it is midnight in that time zone’,
+but this is very abstruse.)</p>
+
+<p>A time-delta is a product type whose components are years, months,
+weeks, days, hours, minutes, and seconds. All the components are
+exact integers, except for seconds, which is an exact rational. If
+the value of one of these components is 0, the time-delta object may
+also be described as not having that component.</p>
+
+<p>A time-delta object corresponds to a duration in ISO 8601 (section
+5.5.2 of ISO 8601:2019).</p>
+
+<div class="boxed">
+<p><span class="boxed-tag">Note</span>:
+Versions of ISO 8601 prior to the 2019 revision did not have the
+concept of a negative duration.</p></div>
+
+<div class="feature">
+<span class="category">(srfi NNN time-delta)<br>procedure</span>
+<code class="signature">(<a id="time-deltap"
+                            href="#time-deltap">time-delta?</a> <var>obj</var>)</code>
+</div>
+
+<p>Returns <code>#t</code> if <var>obj</var> is a time-delta object,
+and <code>#f</code> otherwise.</p>
+
+<div class="feature">
+<span class="category">(srfi NNN time-delta)<br>procedure</span>
+<code class="signature">(<a id="years-delta"
+                            href="#years-delta">years-delta</a> <var>ei</var>)</code><br>
+<code class="signature">(<a id="months-delta"
+                            href="#months-delta">months-delta</a> <var>ei</var>)</code><br>
+<code class="signature">(<a id="weeks-delta"
+                            href="#weeks-delta">weeks-delta</a> <var>ei</var>)</code><br>
+<code class="signature">(<a id="days-delta"
+                            href="#days-delta">days-delta</a> <var>ei</var>)</code><br>
+<code class="signature">(<a id="hours-delta"
+                            href="#hours-delta">hours-delta</a> <var>ei</var>)</code><br>
+<code class="signature">(<a id="seconds-delta"
+                            href="#seconds-delta">seconds-delta</a> <var>er</var>)</code><br>
+</div>
+
+<p>Returns a time-delta object with the corresponding number of the
+unit within the name of the procedure.</p>
+
+<div class="feature">
+<span class="category">(srfi NNN time-delta)<br>procedure</span>
+<code class="signature">(<a id="time-delta-years"
+                            href="#time-delta-years">time-delta-years</a> <var>time-delta</var>)</code><br>
+<code class="signature">(<a id="time-delta-months"
+                            href="#time-delta-months">time-delta-months</a> <var>time-delta</var>)</code><br>
+<code class="signature">(<a id="time-delta-weeks"
+                            href="#time-delta-weeks">time-delta-weeks</a> <var>time-delta</var>)</code><br>
+<code class="signature">(<a id="time-delta-days"
+                            href="#time-delta-days">time-delta-days</a> <var>time-delta</var>)</code><br>
+<code class="signature">(<a id="time-delta-hours"
+                            href="#time-delta-hours">time-delta-hours</a> <var>time-delta</var>)</code><br>
+<code class="signature">(<a id="time-delta-seconds"
+                            href="#time-delta-seconds">time-delta-seconds</a> <var>time-delta</var>)</code><br>
+</div>
+
+<p>Returns the value of the corresponding component in
+<var>time-delta</var>.</p>
+
+<div class="feature">
+<span class="category">(srfi NNN time-delta)<br>procedure</span>
+<code class="signature">(<a id="time-delta-plus" href="#time-delta-plus">time-delta+</a>
+                         <var>time-delta<sub>1</sub></var>
+                         <var>time-delta<sub>2</sub></var>)</code>
+</div>
+
+<p>Returns a time-delta object which is the sum of the given time-delta
+arguments. Specifically, each component is summed; no overflow of smaller
+units to larger ones is calculated.</p>
+
+<div class="feature">
+<span class="category">(srfi NNN time-delta)<br>procedure</span>
+<code class="signature">(<a id="time-delta-negate" href="#time-delta-negate">time-delta-negate</a>
+                         <var>time-delta</var>)</code>
+</div>
+
+<p>Returns a time-delta object which has all its components negated,
+yielding a time-delta of equivalent magnitude but opposite direction.</p>
+
+<div class="feature">
+<span class="category">(srfi NNN time-delta)<br>procedure</span>
+<code class="signature">(<a id="date-plus" href="#date-plus">date+</a>
+                         <var>date</var>
+                         <var>time-delta</var>)</code>
+</div>
+
+<p>It is an error if <var>time-delta</var> is has
+hours, minutes, or seconds components.</p>
+
+<p>Calculate the date that results from adding the <var>time-delta</var> to
+the date object <var>date</var> and return a new date object representing
+that date. The calculation is performed according to Annex D of the ISO
+8601-2:2019 specification.</p>
+
+<div class="feature">
+<span class="category">(srfi NNN time-delta)<br>procedure</span>
+<code class="signature">(<a id="timestamp-plus" href="#timestamp-plus">timestamp+</a>
+                         <var>timestamp</var>
+                         <var>time-delta</var>)</code>
+</div>
+
+<p>Calculate a timestamp that results from adding the <var>time-delta</var>
+to the timestamp object <var>timestamp</var>, returning a new timestamp object
+containing the result. The calculation is performed according to Annex
+D of the ISO 8601-2:2019 specification.</p>
+
+<h3>The current time</h3>
+
+<div class="feature">
+<span class="category">(srfi NNN current-time)<br>procedure</span>
+<code class="signature">(<a id="current-moment" href="#current-moment">current-moment</a>)</code>
+</div>
+
+<p>Return the current time as a moment object.</p>
+
+<div class="boxed">
+<p><span class="boxed-tag">Note</span>:
+The <span class="report-name">R<sup>7</sup>RS</span> provides only the
+<code>current-second</code> procedure which provides the current time as
+an inexact number. Implementations of this SRFI should use exact sources
+of the current time when possible.</p></div>
+
+<div class="feature">
+<span class="category">(srfi NNN current-time)<br>procedure</span>
+<code class="signature">(<a id="current-utc-timestamp" href="#current-utc-timestamp">current-utc-timestamp</a>)</code>
+</div>
+
+<p>Equivalent to <code>(moment-&gt;timestamp (current-moment) utc-timezone)</code>.</p>
+
+<div class="feature">
+<span class="category">(srfi NNN current-time)<br>procedure</span>
+<code class="signature">(<a id="current-system-timestamp" href="#current-system-timestamp">current-system-timestamp</a>)</code>
+</div>
+
+<p>Equivalent to <code>(moment-&gt;timestamp (current-moment) (system-timezone))</code>.</p>
+
+<h2>Examples</h2>
+
+<p>The following Scheme code demonstrates the use of the epoch procedures
+on dates to implement constructors for a non-Gregorian calendar;
+specifically, the French republican calendar in its later, purely
+arithmetic form. (Implementing the astronomical form is an exercise for
+the reader — a long, but not particularly intellectually challenging
+one, for anyone armed with a copy of Reingold and Dershowitz.)</p>
+
+<pre
+>(define proclamation-de-la-république (<a href="#make-date">make-date</a> 1792 9 22))
+
+(define (an-bisextil? an)
+  (and (= (modulo an 4) 0)
+       (not (memv (modulo an 4) '(100 200 300)))
+       (not (= (modulo an 4000) 0))))
+
+(define (construire-date an mois jour)
+  (<a href="#rata-die-to-date">rata-die-&gt;date</a>
+   (+ (<a href="#date-to-rata-die">date-&gt;rata-die</a> proclamation-de-la-république)
+      -1
+      (* 365 (- an 1))
+      (floor-quotient (- an 1) 4)
+      (- (floor-quotient (- an 1) 100))
+      (floor-quotient (- an 1) 400)
+      (- (floor-quotient (- an 1) 4000))
+      (* 30 (- mois 1))
+      jour)))
+
+(define (date-amj date)
+  (let* ((rd (<a href="#date-to-rata-die">date-&gt;rata-die</a> date))
+         (proclamation
+          (<a href="#date-to-rata-die">date-&gt;rata-die</a> proclamation-de-la-république))
+         (approx
+          (+ (floor (* 4000/1460969
+                       (+ (- rd proclamation) 2)))
+             1))
+         (an
+          (if (<a href="#dateltp">date&lt;?</a> date (construire-date approx 1 1))
+              (- approx 1)
+              approx))
+         (mois
+          (+ 1 (floor (* 1/30 (- rd (<a href="#date-to-rata-die">date-&gt;rata-die</a>
+                                     (construire-date an 1 1)))))))
+         (jour
+          (+ 1 rd (- (<a href="#date-to-rata-die">date-&gt;rata-die</a> (construire-date an mois 1))))))
+    (values an mois jour)))
+
+(define (date-an date)
+  (let-values (((an mois jour) (date-amj date))) an))
+(define (date-mois date)
+  (let-values (((an mois jour) (date-amj date))) mois))
+(define (date-jour date)
+  (let-values (((an mois jour) (date-amj date))) jour))</pre>
+
+<p>A program or library which uses these procedures to construct and
+access the day, month, and year of native date objects can interoperate
+transparently with code which works with other calendar systems.</p>
+
+<h2 id="implementation"><a href="#implementation"></a> Implementation</h2>
+
+<p>
+  A sample implementation written in
+  <span class="report-name">R<sup>7</sup>RS</span> with a test suite
+  is included in the
+  SRFI repository. It uses a propletic Gregorian date for the representation
+  of date objects, and uses <a href="https://srfi.schemers.org/srfi-170/">SRFI
+  170</a> for access to the filesystem. It does not refresh timezone data
+  periodically</p>
+
+<p>The sample implementation checks the <code>TZ</code> environment variable
+   and the <code>/etc/localtime</code> file for the system timezone.
+   It checks <code>TZPATH</code> and (by default) <code>/usr/share/zoneinfo</code>
+   for the timezone database and the leap seconds table.
+</p>
+
+<p>
+  The code is not written for performance in mind, although it caches
+  timezones until refresh.  The code theoretically handles negative leap
+  seconds, but you should not count on it.
+</p>
+
+<p>
+  The implementation has been tested with Gauche 0.9.15 and
+  Chibi Scheme 0.11.0.
+</p>
+
+<h2>Acknowledgements</h2>
+
+<p>
+Daphne Preston-Kendal wrote most of this proposal and Arvydas Silanskas
+wrote most of the sample implementation. This proposal is posted with
+their permissions.
+</p>
+
+<p>This SRFI is derived, at some length, from an original proposal by
+John Cowan.</p>
+
+<p>Arvydas Silanskas also found numerous mistakes and omissions.</p>
+
+<p>Thanks to the following people for suggesting new features in the
+specification: Arthur Glecker (clock-time type); Antero Mejr (ability
+to create timestamp/moment conversions independently of the standard
+implementation; explicit note that the method of finding time zone
+database information is implementation-specific).</p>
+
+<p>Thanks to the following people for finding errors in the specification:
+Vincent Manis; Marc Nieper-Wißkirchen.</p>
+
+<p>Thanks to the following people for general encouragement: Alex Shinn;
+Wolfgang Corcoran-Mathe.</p>
+
+<h2 id="bibliography">Bibliography</h2>
+
+<ol>
+<li id="bulletinc">Christian Bizouard. 2026. IERS Bulletin C: Contains announcements of the leap seconds in UTC.
+    Retrieved from <a href="https://hpiers.obspm.fr/iers/bul/bulc/bulletinc.dat">https://hpiers.obspm.fr/iers/bul/bulc/bulletinc.dat</a> on September 5<sup>th</sup>, 2026.</li>
+<li id="leap-seconds-list">IERS. 2026. <code>leap-seconds.txt</code>. Retrieved from
+    <a href="https://hpiers.obspm.fr/iers/bul/bulc/ntp/leap-seconds.list"
+    >https://hpiers.obspm.fr/iers/bul/bulc/ntp/leap-seconds.list
+    on September 5<sup>th</sup>, 2026.</li>
+<li id="tzdb">IETF. Time zones. Retrieved from
+              <a href="https://www.iana.org/time-zones">https://www.iana.org/time-zones</a>
+              on September 5<sup>th</sup>, 2026.</li>
+<li id="ReingoldAndDerschowitz">Edward Reingold and Nachum Derschowitz. 2018.
+<i>Calendrical Calculations: The Ultimate Edition</i>. Cambridge University Press, Cambridge, UK.
+ISBN 978-1-107-68316-7.</li>
+<li id="ISO8601-2019">ISO. ISO 8601:2019: Date and time — Representations for information interchange.
+  Retrieved from <a href="https://www.iso.org/iso-8601-date-and-time-format.html">https://www.iso.org/iso-8601-date-and-time-format.html</a> on September 5<sup>th</sup>, 2026.</li>
+<li id="posix2024">The Open Group. 2024. POSIX, Environment Variables.
+   Retrieved from <a href="https://pubs.opengroup.org/onlinepubs/9799919799/">https://pubs.opengroup.org/onlinepubs/9799919799/</a> on September 5<sup>th</sup>, 2026.</li>
+<li id="einstein">Albert Einstein. 1907. “Über das Relativitätsprinzip und die aus demselben gezogene Folgerungen”, <i>Jahrbuch der Radioaktivität und Elektronik</i>, <b>4</b>: 411.</li>
+<li id="histutc">IERS Rapid Service / Prediction Center. n.d. <code>tai-utc.dat</code>.  U.S. Naval Observatory. Retrieved from
+<a href="https://maia.usno.navy.mil/ser7/tai-utc.dat">https://maia.usno.navy.mil/ser7/tai-utc.dat</a> on September 13<sup>th</sup>, 2026.</li>
+</ol>
+
+
+<h2 id="copyright"><a href="#copyright"></a> Copyright</h2>
+<p>&copy; 2026 Peter McGoron, Daphne Preston-Kendal, Arvydas Silanskas (implementation)</p>
+
+<p>
+  Permission is hereby granted, free of charge, to any person
+  obtaining a copy of this software and associated documentation files
+  (the “Software”), to deal in the Software without restriction,
+  including without limitation the rights to use, copy, modify, merge,
+  publish, distribute, sublicense, and/or sell copies of the Software,
+  and to permit persons to whom the Software is furnished to do so,
+  subject to the following conditions:</p>
+
+<p>
+  The above copyright notice and this permission notice (including the
+  next paragraph) shall be included in all copies or substantial
+  portions of the Software.</p>
+
+<p>
+  THE SOFTWARE IS PROVIDED “AS IS,” WITHOUT WARRANTY OF ANY KIND,
+  EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+  MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+  NONINFRINGEMENT.  IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
+  BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
+  ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+  CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+  SOFTWARE.</p>
+<hr>
+  <address>Editor: <a href="mailto:srfi-editors+at+srfi+dot+schemers+dot+org">Arthur A. Gleckler</a></address></body></html>
