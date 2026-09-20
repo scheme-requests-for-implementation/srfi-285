@@ -370,7 +370,7 @@ IETF [<a href="#tzdb">IETF 2026</a>].
 <p>The <dfn>Rata Die</dfn> is a simple count of days beginning from a standard epoch
 of January 1<sup>st</sup> in the year AD 1 of the proleptic Gregorian calendar,
 which is Rata Die 1. This is the ‘fixed’ type used consistently as a lingua franca
-between calendar systems by <a href="$ReingoldAndDerschowitz"
+between calendar systems by <a href="#ReingoldAndDershowitz"
 >Reingold and Dershowitz</a>.</p>
 
 <p>
@@ -469,7 +469,7 @@ in UTC+12:00 in Wallis and Futuna, which overlap by only two hours. The
 date object is intended to represent the dates of such events.</p>
 </div>
 
-<p>The date procedures are defined with reference to <a href="ReingoldAndDerschowitz"
+<p>The date procedures are defined with reference to <a href="#ReingoldAndDershowitz"
 >Reingold and Dershowitz 2018</a> (hereafter RD); each procedure which has a corresponding formula in
 that book names that formula within its specification. In RD,
 dates are represented by the ‘fixed’ data type, which
@@ -507,7 +507,7 @@ Gregorian calendar by the given <var>year</var>, <var>month</var>, and <var>day<
 <div class="boxed">
 <p><span class="boxed-tag">Note</span>:
 This corresponds to <code>fixed-from-gregorian</code>
-in <a href="#RheingoldAndDerschowitz">RD</a>.
+in <a href="#ReingoldAndDershowitz">RD</a>.
 </div>
 
 <div class="feature">
@@ -537,7 +537,7 @@ yields an object which is <a href="#dateeqp"><code>date=?</code></a> to <var>d</
 
 <div class="boxed">
 <p><span class="boxed-tag">Note</span>:
-This corresponds to <code>gregorian-from-fixed</code> in <a href="ReingoldAndDerschowitz">RD</a>.
+This corresponds to <code>gregorian-from-fixed</code> in <a href="#ReingoldAndDershowitz">RD</a>.
 </p></div>
 
 <div class="feature">
@@ -552,7 +552,7 @@ result from applying the <a href="#date-ymd"><code>date-ymd</code></a> procedure
 
 <div class="boxed">
 <p><span class="boxed-tag">Note</span>: The <code>date-year</code> procedure
-is from <a href="#RheingoldAndDerschowitz">RD</a>. The
+is from <a href="#ReingoldAndDershowitz">RD</a>. The
 other two are conveniences for the corresponding values from <a href="#date-ymd"><code>date-ymd</code></a>,
 and using some internal representations of the data datatype cannot be calculated independently of one another.</p></div>
 
@@ -605,7 +605,7 @@ date object.</p>
 
 <div class="boxed">
 <p><span class="boxed-tag">Note</span>: This procedure corresponds
-to <code>week</code> from <a href="#RheingoldAndDerschowitz">RD</a>’s <code>iso-from-fixed</code>.</p></div>
+to <code>week</code> from <a href="#ReingoldAndDershowitz">RD</a>’s <code>iso-from-fixed</code>.</p></div>
 
 <div class="feature">
 <span class="category">(srfi 285 date)<br>procedure</span>
@@ -616,7 +616,7 @@ to <code>week</code> from <a href="#RheingoldAndDerschowitz">RD</a>’s <code>is
 
 <div class="boxed">
 <p><span class="boxed-tag">Note</span>: This procedure corresponds
-to <code>year</code> from <a href="#RheingoldAndDerschowitz">RD</a>’s <code>iso-from-fixed</code>.</p></div>
+to <code>year</code> from <a href="#ReingoldAndDershowitz">RD</a>’s <code>iso-from-fixed</code>.</p></div>
 
 <div class="feature">
 <span class="category">(srfi 285 date)<br>procedure</span>
@@ -630,7 +630,7 @@ object as an exact integer in the range [1, 7] where 1 is Monday.</p>
 
 <div class="boxed">
 <p><span class="boxed-tag">Note</span>: This procedure corresponds
-to <code>code</code> from <a href="#RheingoldAndDerschowitz">RD</a>’s <code>iso-from-fixed</code>.</p></div>
+to <code>code</code> from <a href="#ReingoldAndDershowitz">RD</a>’s <code>iso-from-fixed</code>.</p></div>
 
 <div class="feature">
 <span class="category">(srfi 285 date)<br>procedure</span>
@@ -642,7 +642,7 @@ represented by the given date object, as an exact integer.</p>
 
 <div class="boxed">
 <p><span class="boxed-tag">Note</span>: This procedure corresponds
-to <code>mjd-from-fixed</code> in <a href="#RheingoldAndDerschowitz">RD</a>.</p></div>
+to <code>mjd-from-fixed</code> in <a href="#ReingoldAndDershowitz">RD</a>.</p></div>
 
 <div class="feature">
 <span class="category">(srfi 285 date)<br>procedure</span>
@@ -653,7 +653,7 @@ to <code>mjd-from-fixed</code> in <a href="#RheingoldAndDerschowitz">RD</a>.</p>
 
 <div class="boxed">
 <p><span class="boxed-tag">Note</span>: This procedure corresponds
-to <code>fixed-from-mjd</code> in <a href="#RheingoldAndDerschowitz">RD</a>.</p></div>
+to <code>fixed-from-mjd</code> in <a href="#ReingoldAndDershowitz">RD</a>.</p></div>
 
 <div class="feature">
 <span class="category">(srfi 285 date)<br>procedure</span>
@@ -1860,7 +1860,7 @@ Shinn and Wolfgang Corcoran-Mathe.</p>
 <li id="tzdb">IETF. Time zones. Retrieved from
               <a href="https://www.iana.org/time-zones">https://www.iana.org/time-zones</a>
               on September 5<sup>th</sup>, 2026.</li>
-<li id="ReingoldAndDerschowitz">Edward Reingold and Nachum Derschowitz. 2018.
+<li id="ReingoldAndDershowitz">Edward M. Reingold and Nachum Dershowitz. 2018.
 <i>Calendrical Calculations: The Ultimate Edition</i>. Cambridge University Press, Cambridge, UK.
 ISBN 978-1-107-68316-7.</li>
 <li id="ISO8601-2019">ISO. ISO 8601:2019: Date and time — Representations for information interchange.
