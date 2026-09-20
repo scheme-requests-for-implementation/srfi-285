@@ -196,6 +196,39 @@ zone object be provided? What if there is none?</li>
     and many calendars and calculations just fix it to be 10.</li>
 </ol>
 
+<h2 id="toc">Table of contents</h2>
+<ul>
+  <li><a href="#rationale">Rationale</a></li>
+  <li>
+    <a href="#specificiation">Specificiation</a>
+    <ul>
+      <li>
+        <a href="#initial-definitions">Initial definitions</a>
+        <ul>
+          <li><a href="#tai">TAI</a></li>
+          <li><a href="#announcement-and-addition-of-leap-seconds-and-changes-to-time-zone-rules">Announcement and addition of leap seconds and changes to time zone rules</a></li>
+          <li><a href="#various-calendars-in-this-srfi">Various Calendars in this SRFI</a></li>
+          <li><a href="#argument-conventions">Argument conventions</a></li>
+        </ul>
+      </li>
+      <li><a href="#optional-and-required-features">Optional and required features</a></li>
+      <li><a href="#dates">Dates</a></li>
+      <li><a href="#gregorian-calendar-utilities">Gregorian calendar utilities</a></li>
+      <li><a href="#clock-times">Clock times</a></li>
+      <li><a href="#moments">Moments</a></li>
+      <li><a href="#timestamps">Timestamps</a></li>
+      <li><a href="#time-zones">Time zones</a></li>
+      <li><a href="#time-deltas">Time-deltas</a></li>
+      <li><a href="#the-current-time">The current time</a></li>
+    </ul>
+  </li>
+  <li><a href="#examples">Examples</a></li>
+  <li><a href="#implementation"> Implementation</a></li>
+  <li><a href="#acknowledgements">Acknowledgements</a></li>
+  <li><a href="#bibliography">Bibliography</a></li>
+  <li><a href="#copyright"> Copyright</a></li>
+</ul>
+
 <h2 id="rationale">Rationale</h2>
 
 <p>
@@ -264,9 +297,9 @@ or February 31<sup>st</sup>.</p></li>
 </p>
 
 <h2 id="specificiation">Specificiation</h2>
-<h3>Initial definitions</h3>
+<h3 id="initial-definitions">Initial definitions</h3>
 
-<h4>TAI</h4>
+<h4 id="tai">TAI</h4>
 
 <p>This SRFI’s specification makes use of a <dfn>TAI</dfn> (<dfn>International Atomic
 Time</dfn>)-based calendar, defined as follows. A date in this TAI-based
@@ -296,7 +329,7 @@ an identical time value to their initial input.</p>
   all times prior to 1972.
 </p></div>
 
-<h4>Announcement and addition of leap seconds and changes to time zone rules</h4>
+<h4 id="announcement-and-addition-of-leap-seconds-and-changes-to-time-zone-rules">Announcement and addition of leap seconds and changes to time zone rules</h4>
 
 <p>Every time a leap second
 [<a href="#bulletinc">Bizouard 2026</a>]
@@ -326,7 +359,7 @@ and the <code>zoneinfo</code> database can be obtained from the
 IETF [<a href="#tzdb">IETF 2026</a>].
 </p>
 
-<h4>Various Calendars in this SRFI</h4>
+<h4 id="various-calendars-in-this-srfi">Various Calendars in this SRFI</h4>
 
 <p>
   This SRFI refers at times to various calendar types.
@@ -350,7 +383,7 @@ between calendar systems by <a href="$ReingoldAndDerschowitz"
   which is Modified Julian Day 0.
 </p>
 
-<h4>Argument conventions</h4>
+<h4 id="argument-conventions">Argument conventions</h4>
 
 <p>It is an error if the following arguments do not satisfy the predicates
 on the right part of the table, defining</p>
@@ -399,7 +432,7 @@ each month.
   <var>second</var> is not in [0,60], then an error is signaled.
 </p>
 
-<h3>Optional and required features</h3>
+<h3 id="optional-and-required-features">Optional and required features</h3>
 
 <p>
   All libraries except <code>(srfi 285 current-time)</code>, and
@@ -411,7 +444,7 @@ each month.
   that are supported by the implementation.
 </p>
 
-<h3>Dates</h3>
+<h3 id="dates">Dates</h3>
 
 <p><dfn>Date objects</dfn> represent a simple count of days from some unspecified
 epoch. They are independent of any time zone. The same date may, depending
@@ -695,7 +728,7 @@ otherwise. The <code>date&lt;?</code> returns <code>#t</code> if the
 each date is strictly before the next dates in the argument list. The
 other procedures are defined in the usual way accordingly.</p>
 
-<h3>Gregorian calendar utilities</h3>
+<h3 id="gregorian-calendar-utilities">Gregorian calendar utilities</h3>
 
 <p>
   These implementation operations specific to the Gregorian calendar.
@@ -804,7 +837,7 @@ and as such only English versions are used.
   <a href="#date-iso-weekday"><code>date-iso-weekday</code></a>).
 </p>
 
-<h3>Clock times</h3>
+<h3 id="clock-times">Clock times</h3>
 
 <p>A <dfn>clock time</dfn> represents the time of day independently of any time zone. As
 with dates, some events are scheduled at certain times of day no matter
@@ -862,7 +895,7 @@ clock time object <var>clock-time</var>.</p>
 <p>Convenience procedures for retrieving the hour, minute, and second from
 <var>clock-time</var> respectively.</p>
 
-<h3>Moments</h3>
+<h3 id="moments">Moments</h3>
 
 <p>Moments are instants within the TAI timescale, represented using the TAI
 calendar — that is, they can be decomposed into a date and a count
@@ -951,7 +984,7 @@ the date measurement in <var>moment<sub>1</sub></var> is the same as the date me
 seconds measurement in <var>moment<sub>2</sub></var>, and so on. The other procedures are defined in
 the usual way accordingly and are required to be transitive.</p>
 
-<h3>Timestamps</h3>
+<h3 id="timestamps">Timestamps</h3>
 
 <p><dfn>Timestamps</dfn> are what humans usually think of as dates and times. They
 are instants within a specific local timescale which, for the sake of
@@ -1339,7 +1372,7 @@ represented even in the full ISO 8601 format.</p></div>
 href="#date-to-iso-8601"><code>date-&gt;iso-8601</code></a> on why no
 inverse of this procedure is provided.</p>
 
-<h3>Time zones</h3>
+<h3 id="time-zones">Time zones</h3>
 
 <p>A <dfn>time zone</dfn> is a set of rules for calculating local
 clock-times in some specific location. It is usually an offset from UTC
@@ -1553,7 +1586,7 @@ to the <a href="#tz-timezone"><code>tz-timezone</code></a> procedure, in an unsp
   <code>TZPATH</code> for the location of the timezone database.
 </p>
 
-<h3>Time-deltas</h3>
+<h3 id="time-deltas">Time-deltas</h3>
 
 <p>A <var>time-delta</var> represents a measurement of an amount of time, although
 they do not necessarily represent an actual duration of time on the
@@ -1671,7 +1704,7 @@ to the timestamp object <var>timestamp</var>, returning a new timestamp object
 containing the result. The calculation is performed according to Annex
 D of the ISO 8601-2:2019 specification.</p>
 
-<h3>The current time</h3>
+<h3 id="the-current-time">The current time</h3>
 
 <div class="feature">
 <span class="category">(srfi 285 current-time)<br>procedure</span>
@@ -1701,7 +1734,7 @@ of the current time when possible.</p></div>
 
 <p>Equivalent to <code>(moment-&gt;timestamp (current-moment) (system-timezone))</code>.</p>
 
-<h2>Examples</h2>
+<h2 id="examples">Examples</h2>
 
 <p>The following Scheme code demonstrates the use of the epoch procedures
 on dates to implement constructors for a non-Gregorian calendar;
@@ -1789,7 +1822,7 @@ transparently with code which works with other calendar systems.</p>
   Chibi Scheme 0.11.0.
 </p>
 
-<h2>Acknowledgements</h2>
+<h2 id="acknowledgements">Acknowledgements</h2>
 
 <p>
 Daphne Preston-Kendal wrote most of this proposal and Arvydas Silanskas
