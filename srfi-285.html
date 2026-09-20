@@ -121,7 +121,7 @@ SPDX-License-Identifier: MIT
     </style>
     <link href="/favicon.png" rel="icon" sizes="192x192" type="image/png">
     <link rel="stylesheet" href="https://srfi.schemers.org/srfi.css" type="text/css">
-    <meta name="viewport" content="width=device-width, initial-scale=1"></head>
+    <meta name="viewport" content="width=device-width"></head>
   <body>
     <h1><a href="https://srfi.schemers.org/"
         ><img class="srfi-logo"
@@ -132,6 +132,17 @@ SPDX-License-Identifier: MIT
 <p>by Peter McGoron (steward, corresponding author);<br>
 John Cowan (original design), Daphne Preston-Kendal (design and specification)
 and Arvydas Silanskas (implementation)
+</p>
+
+<p>
+  This SRFI details an API for storing and manipluating dates and times.
+  This SRFI decomposes dates and times into dates (a count of days in the
+  proleptic Gregorian calendar), clock times (time of day, independent of
+  time zone), moments (instants in TAI), timezones (a possibly dynamic
+  offset from UTC), timestamps (a date, clock time,and timezone), and
+  time deltas (measurement of elapsed time). By doing this, a Scheme
+  program can operate on days in different calendars and timestamps in
+  different timezones.
 </p>
 
 <h2 id="issues">Issues</h2>
@@ -184,19 +195,6 @@ zone object be provided? What if there is none?</li>
     This is strictly incorrect, but the difference is not computable,
     and many calendars and calculations just fix it to be 10.</li>
 </ol>
-
-<h2 id="abstract">Abstract</h2>
-
-<p>
-  This SRFI details an API for storing and manipluating dates and times.
-  This SRFI decomposes dates and times into dates (a count of days in the
-  proleptic Gregorian calendar), clock times (time of day, independent of
-  time zone), moments (instants in TAI), timezones (a possibly dynamic
-  offset from UTC), timestamps (a date, clock time,and timezone), and
-  time deltas (measurement of elapsed time). By doing this, a Scheme
-  program can operate on days in different calendars and timestamps in
-  different timezones.
-</p>
 
 <h2 id="rationale">Rationale</h2>
 
