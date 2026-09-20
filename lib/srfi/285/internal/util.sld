@@ -2,7 +2,7 @@
 ;;; SPDX-License-Identifier: MIT
 ;;; SPDX-FileCopyrightText: 2026 Peter McGoron
 
-(define-library (srfi NNN internal util)
+(define-library (srfi 285 internal util)
   (import (scheme base))
   (export left-pad)
   (begin

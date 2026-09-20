@@ -1,10 +1,10 @@
 ;;; SPDX-FileCopyrightText: 2026 Peter McGoron
 ;;; SPDX-License-Identifier: MIT
 
-(define-library (srfi NNN current-time)
+(define-library (srfi 285 current-time)
   (import (scheme base)
-          (srfi NNN timestamp)
-          (srfi NNN timezone))
+          (srfi 285 timestamp)
+          (srfi 285 timezone))
   (export current-moment
           current-utc-timestamp
           current-system-timestamp)

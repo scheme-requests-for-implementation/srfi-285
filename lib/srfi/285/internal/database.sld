@@ -1,14 +1,14 @@
 ;;; SPDX-FileCopyrightText: 2026 Peter McGoron
 ;;; SPDX-License-Identifier: MIT
 
-(define-library (srfi NNN internal database)
+(define-library (srfi 285 internal database)
   (import (scheme base) (scheme write)
-          (srfi NNN date)
-          (srfi NNN clock-time)
-          (srfi NNN internal time-delta)
-          (srfi NNN internal dst)
-          (srfi NNN internal util)
-          (srfi NNN moment)
+          (srfi 285 date)
+          (srfi 285 clock-time)
+          (srfi 285 internal time-delta)
+          (srfi 285 internal dst)
+          (srfi 285 internal util)
+          (srfi 285 moment)
           (tzif-parser tz)
           (tzif-parser modify-leap-seconds)
           (tzif-parser discover-tzdb)

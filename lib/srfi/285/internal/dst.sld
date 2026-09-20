@@ -1,11 +1,11 @@
 ;;; SPDX-FileCopyrightText: 2026 Peter McGoron
 ;;; SPDX-License-Identifier: MIT
 
-(define-library (srfi NNN internal dst)
+(define-library (srfi 285 internal dst)
   (import (scheme base) (scheme write)
-          (srfi NNN date)
-          (srfi NNN gregorian)
-          (srfi NNN internal time-delta)
+          (srfi 285 date)
+          (srfi 285 gregorian)
+          (srfi 285 internal time-delta)
           (tzif-parser tz)
           (tzif-parser local-time))
   (export transition-unix transition-local

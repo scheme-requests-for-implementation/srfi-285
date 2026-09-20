@@ -1,8 +1,8 @@
 ;;; SPDX-FileCopyrightText: 2026 Peter McGoron
 ;;; SPDX-License-Identifier: MIT
 
-(define-library (srfi NNN timestamp)
-  (import (srfi NNN internal timestamp))
+(define-library (srfi 285 timestamp)
+  (import (srfi 285 internal timestamp))
   (export make-timestamp date+clock-time->timestamp
           timestamp? moment->timestamp timestamp->moment
           timestamp-in-timezone

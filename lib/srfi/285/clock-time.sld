@@ -1,7 +1,7 @@
 ;;; SPDX-FileCopyrightText: 2026 Peter McGoron
 ;;; SPDX-License-Identifier: MIT
 
-(define-library (srfi NNN clock-time)
+(define-library (srfi 285 clock-time)
   (import (scheme base))
   (export clock-time? clock-time-hms
           make-clock-time

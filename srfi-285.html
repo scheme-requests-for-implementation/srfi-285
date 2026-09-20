@@ -7,7 +7,7 @@ SPDX-License-Identifier: MIT
 -->
   <head>
     <meta charset="utf-8">
-    <title>SRFI ###: Dates and Times</title>
+    <title>SRFI 283: Dates and Times</title>
     <style>
             table {
               border: 1px solid;
@@ -127,7 +127,7 @@ SPDX-License-Identifier: MIT
         ><img class="srfi-logo"
               src="https://srfi.schemers.org/srfi-logo.svg"
               alt="SRFI surfboard logo"
-        /></a>###: Dates and Times</h1>
+        /></a>283: Dates and Times</h1>
 
 <p>by Peter McGoron (steward, corresponding author);<br>
 John Cowan (original design), Daphne Preston-Kendal (design and specification)
@@ -404,12 +404,12 @@ each month.
 <h3>Optional and required features</h3>
 
 <p>
-  All libraries except <code>(srfi NNN current-time)</code>, and
-  <code>(srfi NNN tzdb)</code> are required.
+  All libraries except <code>(srfi 285 current-time)</code>, and
+  <code>(srfi 285 tzdb)</code> are required.
 </p>
 
 <p>
-  The <code>(srfi NNN)</code> composite library exports all identifiers
+  The <code>(srfi 285)</code> composite library exports all identifiers
   that are supported by the implementation.
 </p>
 
@@ -464,7 +464,7 @@ in ISO 8601 (section 5.2.2.1 of <a href="#ISO8601-2019">ISO 8601:2019</a>). Acc
 provided for complete representations of week dates (section 5.2.4.1).</p>
 
 <div class="feature">
-<span class="category">(srfi NNN date)<br>procedure</span>
+<span class="category">(srfi 285 date)<br>procedure</span>
 <code class="signature">(<a id="make-date" href="#make-date">make-date</a> <var>year</var> <var>month</var> <var>day</var>)</code>
 </div>
 
@@ -478,14 +478,14 @@ in <a href="#RheingoldAndDerschowitz">RD</a>.
 </div>
 
 <div class="feature">
-<span class="category">(srfi NNN date)<br>procedure</span>
+<span class="category">(srfi 285 date)<br>procedure</span>
 <code class="signature">(<a id="datep" href="#datep">date?</a> <var>obj</var>)</code>
 </div>
 
 <p>Returns <code>#t</code> if <var>obj</var> is a date object, or <code>#f</code> otherwise.</p>
 
 <div class="feature">
-<span class="category">(srfi NNN date)<br>procedure</span>
+<span class="category">(srfi 285 date)<br>procedure</span>
 <code class="signature">(<a id="date-ymd" href="#date-ymd">date-ymd</a> <var>date</var>)</code>
 </div>
 
@@ -508,7 +508,7 @@ This corresponds to <code>gregorian-from-fixed</code> in <a href="ReingoldAndDer
 </p></div>
 
 <div class="feature">
-<span class="category">(srfi NNN date)<br>procedure</span>
+<span class="category">(srfi 285 date)<br>procedure</span>
 <code class="signature">(<a id="date-year" href="#date-year">date-year</a> <var>date</var>)</code><br>
 <code class="signature">(<a id="date-month" href="#date-month">date-month</a> <var>date</var>)</code><br>
 <code class="signature">(<a id="date-day" href="#date-day">date-day</a> <var>date</var>)</code><br>
@@ -524,7 +524,7 @@ other two are conveniences for the corresponding values from <a href="#date-ymd"
 and using some internal representations of the data datatype cannot be calculated independently of one another.</p></div>
 
 <div class="feature">
-<span class="category">(srfi NNN date)<br>procedure</span>
+<span class="category">(srfi 285 date)<br>procedure</span>
 <code class="signature">(<a id="date-to-iso-8601" href="#date-to-iso-8601">date-&gt;iso-8601</a> <var>date</var>)</code><br>
 </div>
 
@@ -561,7 +561,7 @@ object as an exact integer in the range [0, 6] where 0 is Sunday.</p>
 -->
 
 <div class="feature">
-<span class="category">(srfi NNN date)<br>procedure</span>
+<span class="category">(srfi 285 date)<br>procedure</span>
 <code class="signature">(<a id="date-iso-week" href="#date-iso-week">date-iso-week</a> <var>date</var>)</code><br>
 </div>
 
@@ -575,7 +575,7 @@ date object.</p>
 to <code>week</code> from <a href="#RheingoldAndDerschowitz">RD</a>’s <code>iso-from-fixed</code>.</p></div>
 
 <div class="feature">
-<span class="category">(srfi NNN date)<br>procedure</span>
+<span class="category">(srfi 285 date)<br>procedure</span>
 <code class="signature">(<a id="date-iso-week-year" href="#date-iso-week-year">date-iso-week-year</a> <var>date</var>)</code><br>
 </div>
 
@@ -586,7 +586,7 @@ to <code>week</code> from <a href="#RheingoldAndDerschowitz">RD</a>’s <code>is
 to <code>year</code> from <a href="#RheingoldAndDerschowitz">RD</a>’s <code>iso-from-fixed</code>.</p></div>
 
 <div class="feature">
-<span class="category">(srfi NNN date)<br>procedure</span>
+<span class="category">(srfi 285 date)<br>procedure</span>
 <code class="signature">(<a id="date-iso-weekday" href="#date-iso-weekday">date-iso-weekday</a> <var>date</var>)</code>
 </div>
 
@@ -600,7 +600,7 @@ object as an exact integer in the range [1, 7] where 1 is Monday.</p>
 to <code>code</code> from <a href="#RheingoldAndDerschowitz">RD</a>’s <code>iso-from-fixed</code>.</p></div>
 
 <div class="feature">
-<span class="category">(srfi NNN date)<br>procedure</span>
+<span class="category">(srfi 285 date)<br>procedure</span>
 <code class="signature">(<a id="date-to-mjd" href="#date-to-mjd">date-&gt;mjd</a> <var>date</var>)</code>
 </div>
 
@@ -612,7 +612,7 @@ represented by the given date object, as an exact integer.</p>
 to <code>mjd-from-fixed</code> in <a href="#RheingoldAndDerschowitz">RD</a>.</p></div>
 
 <div class="feature">
-<span class="category">(srfi NNN date)<br>procedure</span>
+<span class="category">(srfi 285 date)<br>procedure</span>
 <code class="signature">(<a id="mjd-to-date" href="#mjd-to-date">mjd-&gt;date</a> <var>ei</var>)</code>
 </div>
 
@@ -623,7 +623,7 @@ to <code>mjd-from-fixed</code> in <a href="#RheingoldAndDerschowitz">RD</a>.</p>
 to <code>fixed-from-mjd</code> in <a href="#RheingoldAndDerschowitz">RD</a>.</p></div>
 
 <div class="feature">
-<span class="category">(srfi NNN date)<br>procedure</span>
+<span class="category">(srfi 285 date)<br>procedure</span>
 <code class="signature">(<a id="date-to-rata-die" href="#date-to-rata-die">date-&gt;rata-die</a> <var>date</var>)</code>
 </div>
 
@@ -631,7 +631,7 @@ to <code>fixed-from-mjd</code> in <a href="#RheingoldAndDerschowitz">RD</a>.</p>
 given date object, as an exact integer.</p>
 
 <div class="feature">
-<span class="category">(srfi NNN date)<br>procedure</span>
+<span class="category">(srfi 285 date)<br>procedure</span>
 <code class="signature">(<a id="rata-die-to-date" href="#rata-die-to-date">rata-die-&gt;date</a> <var>ei</var>)</code>
 </div>
 
@@ -667,7 +667,7 @@ given date object, as an exact integer.</p>
     (first-sunday-after paschal-moon)))</code></pre>
 
 <div class="feature">
-<span class="category">(srfi NNN date)<br>procedure</span>
+<span class="category">(srfi 285 date)<br>procedure</span>
 <code class="signature">(<a id="dateeqp" href="#dateeqp">date=?</a>
 <var>date<sub>1</sub></var>
 <var>date<sub>2</sub></var>
@@ -704,7 +704,7 @@ other procedures are defined in the usual way accordingly.</p>
 </p>
 
 <div class="feature">
-<span class="category">(srfi NNN gregorian)<br>procedure</span>
+<span class="category">(srfi 285 gregorian)<br>procedure</span>
 <code class="signature">(<a id="leap-yearp" href="#leap-year">leap-year?</a> <var>ei</var>)</code><br>
 </div>
 
@@ -714,7 +714,7 @@ other procedures are defined in the usual way accordingly.</p>
 </p>
 
 <div class="feature">
-<span class="category">(srfi NNN gregorian)<br>procedure</span>
+<span class="category">(srfi 285 gregorian)<br>procedure</span>
 <code class="signature">(<a id="day-name-to-weekday"
                             href="#day-name-to-weekday"
 >day-name-&gt;weekday</a> <var>symbol</var>)</code><br>
@@ -744,7 +744,7 @@ and as such only English versions are used.
 </p></div>
 
 <div class="feature">
-<span class="category">(srfi NNN gregorian)<br>procedure</span>
+<span class="category">(srfi 285 gregorian)<br>procedure</span>
 <code class="signature">(<a id="days-in-month"
                             href="#days-in-month"
 >days-in-month</a> <var>year</var> <var>month</var>)</code><br>
@@ -758,7 +758,7 @@ and as such only English versions are used.
 </p>
 
 <div class="feature">
-<span class="category">(srfi NNN gregorian)<br>procedure</span>
+<span class="category">(srfi 285 gregorian)<br>procedure</span>
 <code class="signature">(<a id="nth-in-month"
                             href="#nth-in-month"
 >nth-in-month</a> <var>year</var> <var>month</var> <var>weekday</var> <var>k</var>)</code><br>
@@ -794,7 +794,7 @@ and as such only English versions are used.
    standard-timezone))</code></pre>
 
 <div class="feature">
-<span class="category">(srfi NNN gregorian)<br>procedure</span>
+<span class="category">(srfi 285 gregorian)<br>procedure</span>
 <code class="signature">(<a id="nth-in-month"
                             href="#nth-in-month"
 >last-in-month</a> <var>year</var> <var>month</var> <var>weekday</var>)</code><br>
@@ -832,7 +832,7 @@ with a fractional part of a second (section 5.3.1.2.a of ISO 8601:2019).</p>
 </p>
 
 <div class="feature">
-<span class="category">(srfi NNN clock-time)<br>procedure</span>
+<span class="category">(srfi 285 clock-time)<br>procedure</span>
 <code class="signature">(<a id="make-clock-time" href="#make-clock-time">make-clock-time</a> <var>hour</var> <var>minute</var> <var>second</var>)</code>
 </div>
 
@@ -840,14 +840,14 @@ with a fractional part of a second (section 5.3.1.2.a of ISO 8601:2019).</p>
 values.</p>
 
 <div class="feature">
-<span class="category">(srfi NNN clock-time)<br>procedure</span>
+<span class="category">(srfi 285 clock-time)<br>procedure</span>
 <code class="signature">(<a id="clock-timep" href="#clock-timep">clock-time?</a> <var>obj</var>)</code>
 </div>
 
 <p>Returns <code>#t</code> if <var>obj</var> is a clock time object, or <code>#f</code> otherwise.</p>
 
 <div class="feature">
-<span class="category">(srfi NNN clock-time)<br>procedure</span>
+<span class="category">(srfi 285 clock-time)<br>procedure</span>
 <code class="signature">(<a id="clock-time-hms" href="#clock-time-hms">clock-time-hms</a> <var>clock-time</var>)</code>
 </div>
 
@@ -855,7 +855,7 @@ values.</p>
 clock time object <var>clock-time</var>.</p>
 
 <div class="feature">
-<span class="category">(srfi NNN clock-time)<br>procedure</span>
+<span class="category">(srfi 285 clock-time)<br>procedure</span>
 <code class="signature">(<a id="clock-time-hour" href="#clock-time-hour">clock-time-hour</a> <var>clock-time</var>)</code><br>
 <code class="signature">(<a id="clock-time-minute" href="#clock-time-minute">clock-time-minute</a> <var>clock-time</var>)</code><br>
 <code class="signature">(<a id="clock-time-second" href="#clock-time-second">clock-time-second</a> <var>clock-time</var>)</code><br>
@@ -888,7 +888,7 @@ timescale, because TAI is officially a count of seconds with no notion
 of minutes, hours, or days.</p></div>
 
 <div class="feature">
-<span class="category">(srfi NNN moment)<br>procedure</span>
+<span class="category">(srfi 285 moment)<br>procedure</span>
 <code class="signature">(<a id="make-moment" href="#make-moment">make-moment</a> <var>date</var> <var>seconds</var>)</code><br>
 </div>
 
@@ -896,14 +896,14 @@ of minutes, hours, or days.</p></div>
 in the TAI calendar.</p>
 
 <div class="feature">
-<span class="category">(srfi NNN moment)<br>procedure</span>
+<span class="category">(srfi 285 moment)<br>procedure</span>
 <code class="signature">(<a id="momentp" href="#momentp">moment?</a> <var>obj</var>)</code><br>
 </div>
 
 <p>Returns <code>#t</code> if <var>obj</var> is a moment object, or <code>#f</code> otherwise.</p>
 
 <div class="feature">
-<span class="category">(srfi NNN moment)<br>procedure</span>
+<span class="category">(srfi 285 moment)<br>procedure</span>
 <code class="signature">(<a id="moment-date" href="#moment-date">moment-date</a> <var>moment</var>)</code><br>
 </div>
 
@@ -911,7 +911,7 @@ in the TAI calendar.</p>
 represented by the given moment object.</p>
 
 <div class="feature">
-<span class="category">(srfi NNN moment)<br>procedure</span>
+<span class="category">(srfi 285 moment)<br>procedure</span>
 <code class="signature">(<a id="moment-second-of-day" href="#moment-second-of-day">moment-second-of-day</a> <var>moment</var>)</code><br>
 </div>
 
@@ -919,7 +919,7 @@ represented by the given moment object.</p>
 of the day in the TAI calendar which the given moment object represents.</p>
 
 <div class="feature">
-<span class="category">(srfi NNN moment)<br>procedure</span>
+<span class="category">(srfi 285 moment)<br>procedure</span>
 <code class="signature">(<a id="momenteqp" href="#momenteqp">moment=?</a>
 <var>moment<sub>1</sub></var>
 <var>moment<sub>2</sub></var>
@@ -987,7 +987,7 @@ of time shift designators for producers or consumers of date and time
 information.</p>
 
 <div class="feature">
-<span class="category">(srfi NNN timestamp)<br>procedure</span>
+<span class="category">(srfi 285 timestamp)<br>procedure</span>
 <code class="signature">(<a id="make-timestamp" href="#make-timestamp">make-timestamp</a>
 <var>year</var>
 <var>month</var>
@@ -1024,7 +1024,7 @@ information.</p>
 </p></div>
 
 <div class="feature">
-<span class="category">(srfi NNN timestamp)<br>procedure</span>
+<span class="category">(srfi 285 timestamp)<br>procedure</span>
 <code class="signature">(<a id="date-and-clock-time-to-timestamp" href="#date-and-clock-time-to-timestamp"
 >date+clock-time-&gt;timestamp</a>
 <var>date</var>
@@ -1041,7 +1041,7 @@ information.</p>
 </p>
 
 <div class="feature">
-<span class="category">(srfi NNN timestamp)<br>procedure</span>
+<span class="category">(srfi 285 timestamp)<br>procedure</span>
 <code class="signature">(<a id="timestampp" href="#timestampp">timestamp?</a> <var>obj</var>)</code>
 <div>
 
@@ -1049,7 +1049,7 @@ information.</p>
 and <code>#f</code> if <var>obj</var> is any other object.</p>
 
 <div class="feature">
-<span class="category">(srfi NNN timestamp)<br>procedure</span>
+<span class="category">(srfi 285 timestamp)<br>procedure</span>
 <code class="signature">(<a id="moment-to-timestamp" href="#moment-to-timestamp">moment-&gt;timestamp</a>
 <var>moment</var> <var>timezone</var>)</code>
 <div>
@@ -1058,7 +1058,7 @@ and <code>#f</code> if <var>obj</var> is any other object.</p>
 <var>timezone</var> at the instant represented by <var>moment</var>.</p>
 
 <div class="feature">
-<span class="category">(srfi NNN timestamp)<br>procedure</span>
+<span class="category">(srfi 285 timestamp)<br>procedure</span>
 <code class="signature">(<a id="timestamp-to-moment" href="#timestamp-to-moment">timestamp-&gt;moment</a>
 <var>timestamp</var>)</code>
 <div>
@@ -1067,7 +1067,7 @@ and <code>#f</code> if <var>obj</var> is any other object.</p>
 was observed in its time zone.</p>
 
 <div class="feature">
-<span class="category">(srfi NNN timestamp)<br>procedure</span>
+<span class="category">(srfi 285 timestamp)<br>procedure</span>
 <code class="signature">(<a id="timestamp-in-timezone" href="#timestamp-in-timezone">timestamp-in-timezone</a>
 <var>timestamp</var> <var>timezone</var>)</code>
 <div>
@@ -1080,7 +1080,7 @@ zone. Equivalent to:</p>
 >(moment-&gt;timestamp (timestamp-&gt;moment <var>timestamp</var>) <var>timezone</var>)</pre>
 
 <div class="feature">
-<span class="category">(srfi NNN timestamp)<br>procedure</span>
+<span class="category">(srfi 285 timestamp)<br>procedure</span>
 <code class="signature">(<a id="posix-time-to-utc-timestamp"
                             href="#posix-time-to-utc-timestamp">posix-time-&gt;utc-timestamp</a>
 <var>posix-seconds</var> [<var>nanoseconds</var>])</code>
@@ -1113,7 +1113,7 @@ will get a timestamp for it in the user’s local time zone.</p>
 -->
 
 <div class="feature">
-<span class="category">(srfi NNN timestamp)<br>procedure</span>
+<span class="category">(srfi 285 timestamp)<br>procedure</span>
 <code class="signature">(<a id="timestamp-to-utc-posix-time"
                             href="#timestamp-to-utc-posix-time">timestamp-&gt;utc-posix-time</a>
 <var>timestamp</var>)</code>
@@ -1136,7 +1136,7 @@ time. Thus, doing a wrong thing (attempting a round trip conversion in
 the expectation of losslessness) will look wrong.</p></div>
 
 <div class="feature">
-<span class="category">(srfi NNN timestamp)<br>procedure</span>
+<span class="category">(srfi 285 timestamp)<br>procedure</span>
 <code class="signature">(<a id="timestamp-date"
                             href="#timestamp-date">timestamp-date</a>
 <var>timestamp</var>)</code>
@@ -1148,7 +1148,7 @@ object in the sense of <code>eqv?</code> or <code>eq?</code>, including date obj
 by previous invocations of this procedure on the same timestamp object.</p>
 
 <div class="feature">
-<span class="category">(srfi NNN timestamp)<br>procedure</span>
+<span class="category">(srfi 285 timestamp)<br>procedure</span>
 <code class="signature">(<a id="timestamp-ymd"
                             href="#timestamp-ymd">timestamp-ymd</a>
 <var>timestamp</var>)</code><br>
@@ -1173,7 +1173,7 @@ by previous invocations of this procedure on the same timestamp object.</p>
 </pre>
 
 <div class="feature">
-<span class="category">(srfi NNN timestamp)<br>procedure</span>
+<span class="category">(srfi 285 timestamp)<br>procedure</span>
 <code class="signature">(<a id="timestamp-clock-time"
                             href="#timestamp-clock-time">timestamp-clock-time</a>
 <var>timestamp</var>)</code>
@@ -1186,7 +1186,7 @@ of <code>eqv?</code> or <code>eq?</code>, including clock-time objects returned 
 invocations of this procedure on the same timestamp object.</p>
 
 <div class="feature">
-<span class="category">(srfi NNN timestamp)<br>procedure</span>
+<span class="category">(srfi 285 timestamp)<br>procedure</span>
 <code class="signature">(<a id="timestamp-hms"
                             href="#timestamp-hms">timestamp-hms</a>
 <var>timestamp</var>)</code><br>
@@ -1210,7 +1210,7 @@ invocations of this procedure on the same timestamp object.</p>
 (clock-time-second (timestamp-clock-time <var>timestamp</var>))</pre>
 
 <div class="feature">
-<span class="category">(srfi NNN timestamp)<br>procedure</span>
+<span class="category">(srfi 285 timestamp)<br>procedure</span>
 <code class="signature">(<a id="timestamp-timezone"
                             href="#timestamp-timezone">timestamp-timezone</a>
 <var>timestamp</var>)</code><br>
@@ -1224,7 +1224,7 @@ zone object that was passed to the procedure which originally constructed
 the timestamp object.</p>
 
 <div class="feature">
-<span class="category">(srfi NNN timestamp)<br>procedure</span>
+<span class="category">(srfi 285 timestamp)<br>procedure</span>
 <code class="signature">(<a id="timestamp-fold"
                             href="#timestamp-fold">timestamp-fold</a>
 <var>timestamp</var>)</code><br>
@@ -1238,7 +1238,7 @@ winter time. In particular, if the time zone object used in the timestamp
 consists only of a fixed offset, this procedure always returns 0.</p>
 
 <div class="feature">
-<span class="category">(srfi NNN timestamp)<br>procedure</span>
+<span class="category">(srfi 285 timestamp)<br>procedure</span>
 <code class="signature">(<a id="timestamp-timezone-offset"
                             href="#timestamp-timezone-offset">timestamp-timezone-offset</a>
 <var>timestamp</var>)</code><br>
@@ -1248,7 +1248,7 @@ consists only of a fixed offset, this procedure always returns 0.</p>
 in the timestamp’s timezone at the corresponding moment.</p>
 
 <div class="feature">
-<span class="category">(srfi NNN timestamp)<br>procedure</span>
+<span class="category">(srfi 285 timestamp)<br>procedure</span>
 <code class="signature">(<a id="timestamp-timezone-abbreviation"
                             href="#timestamp-timezone-abbreviation">timestamp-timezone-abbreviation</a>
 <var>timestamp</var>)</code><br>
@@ -1267,7 +1267,7 @@ IST can refer to India Standard Time, Ireland Standard Time, or
 Israel Standard Time.</p></div>
 
 <div class="feature">
-<span class="category">(srfi NNN timestamp)<br>procedure</span>
+<span class="category">(srfi 285 timestamp)<br>procedure</span>
 <code class="signature">(<a id="timestamp-timezone-dstp"
                             href="#timestamp-timezone-dst">timestamp-timezone-dst?</a>
 <var>timestamp</var>)</code><br>
@@ -1286,7 +1286,7 @@ flag should be taken from the appropriate field in the timezone
 database.</p></div>
 
 <div class="feature">
-<span class="category">(srfi NNN timestamp)<br>procedure</span>
+<span class="category">(srfi 285 timestamp)<br>procedure</span>
 <code class="signature">(<a id="timestamp-to-iso-8601"
                             href="#timestamp-to-iso-8601">timestamp-&gt;iso-8601</a>
 <var>timestamp</var>)</code><br>
@@ -1370,7 +1370,7 @@ case, the <code>leapseconds</code> file should provided anyway, and will
 have to be combined with the default <code>posix</code> data.</p></div>
 
 <div class="feature">
-<span class="category">(srfi NNN timezone)<br>procedure</span>
+<span class="category">(srfi 285 timezone)<br>procedure</span>
 <code class="signature">(<a id="timezonep"
                             href="#timezonep">timezone?</a>
 <var>obj</var>)</code><br>
@@ -1379,7 +1379,7 @@ have to be combined with the default <code>posix</code> data.</p></div>
 <p>Returns <code>#t</code> if <var>obj</var> is a time zone object and <code>#f</code> otherwise.</p>
 
 <div class="feature">
-<span class="category">(srfi NNN timezone)<br>procedure</span>
+<span class="category">(srfi 285 timezone)<br>procedure</span>
 <code class="signature">(<a id="utc-timezone"
                             href="#utc-timezone">utc-timezone</a>)</code>
 </div>
@@ -1387,7 +1387,7 @@ have to be combined with the default <code>posix</code> data.</p></div>
 <p>A time zone which adds leap seconds to TAI only.</p>
 
 <div class="feature">
-<span class="category">(srfi NNN timezone)<br>procedure</span>
+<span class="category">(srfi 285 timezone)<br>procedure</span>
 <code class="signature">(<a id="utc-offset-timezone"
                             href="#utc-offset-timezone">utc-offset-timezone</a>
 <var>time-delta</var>)</code>
@@ -1414,7 +1414,7 @@ was created.</p></div>
 
 <!--
 <div class="feature">
-<span class="category">(srfi NNN timezone)<br>procedure</span>
+<span class="category">(srfi 285 timezone)<br>procedure</span>
 <code class="signature">(<a id="utc-offset-timezone"
                             href="#utc-offset-timezone">utc-offset-timezone</a>
 <var>string<sub>std</sub></var>
@@ -1450,7 +1450,7 @@ future timestamps.
 -->
 
 <div class="feature">
-<span class="category">(srfi NNN timezone)<br>procedure</span>
+<span class="category">(srfi 285 timezone)<br>procedure</span>
 <code class="signature">(<a id="timezone-earliest"
                             href="#timezone-earliest">timezone-earliest</a>
 <var>timezone</var>)</code>
@@ -1470,7 +1470,7 @@ future timestamps.
 </p>
 
 <div class="feature">
-<span class="category">(srfi NNN timezone)<br>procedure</span>
+<span class="category">(srfi 285 timezone)<br>procedure</span>
 <code class="signature">(<a id="timezone-latest"
                             href="#timezone-latest">timezone-latest</a>
 <var>timezone</var>)</code>
@@ -1497,7 +1497,7 @@ future timestamps.
 </p>
 
 <div class="feature">
-<span class="category">(srfi NNN tzdb)<br>procedure</span>
+<span class="category">(srfi 285 tzdb)<br>procedure</span>
 <code class="signature">(<a id="reload-timezone-data"
                             href="#reload-timezone-data"
                          >reload-timezone-data!</a>)</code>
@@ -1516,7 +1516,7 @@ this procedure once every 24 hours to update the timezone database.
 </p></div>
 
 <div class="feature">
-<span class="category">(srfi NNN timezone)<br>procedure</span>
+<span class="category">(srfi 285 timezone)<br>procedure</span>
 <code class="signature">(<a id="system-timezone"
                             href="#system-timezone">system-timezone</a>)</code>
 </div>
@@ -1531,7 +1531,7 @@ this procedure once every 24 hours to update the timezone database.
 </p>
 
 <div class="feature">
-<span class="category">(srfi NNN tzdb)<br>procedure</span>
+<span class="category">(srfi 285 tzdb)<br>procedure</span>
 <code class="signature">(<a id="tz-timezone"
                             href="#tz-timezone">tz-timezone</a> <var>string</var>)</code>
 </div>
@@ -1541,7 +1541,7 @@ entry for <var>string</var>. An error is signaled if the time zone
 <var>string</var> is not known to the system.</p>
 
 <div class="feature">
-<span class="category">(srfi NNN tzdb)<br>procedure</span>
+<span class="category">(srfi 285 tzdb)<br>procedure</span>
 <code class="signature">(<a id="tz-timezones"
                             href="#tz-timezones">tz-timezones</a>)</code>
 </div>
@@ -1580,7 +1580,7 @@ Versions of ISO 8601 prior to the 2019 revision did not have the
 concept of a negative duration.</p></div>
 
 <div class="feature">
-<span class="category">(srfi NNN time-delta)<br>procedure</span>
+<span class="category">(srfi 285 time-delta)<br>procedure</span>
 <code class="signature">(<a id="time-deltap"
                             href="#time-deltap">time-delta?</a> <var>obj</var>)</code>
 </div>
@@ -1589,7 +1589,7 @@ concept of a negative duration.</p></div>
 and <code>#f</code> otherwise.</p>
 
 <div class="feature">
-<span class="category">(srfi NNN time-delta)<br>procedure</span>
+<span class="category">(srfi 285 time-delta)<br>procedure</span>
 <code class="signature">(<a id="years-delta"
                             href="#years-delta">years-delta</a> <var>ei</var>)</code><br>
 <code class="signature">(<a id="months-delta"
@@ -1608,7 +1608,7 @@ and <code>#f</code> otherwise.</p>
 unit within the name of the procedure.</p>
 
 <div class="feature">
-<span class="category">(srfi NNN time-delta)<br>procedure</span>
+<span class="category">(srfi 285 time-delta)<br>procedure</span>
 <code class="signature">(<a id="time-delta-years"
                             href="#time-delta-years">time-delta-years</a> <var>time-delta</var>)</code><br>
 <code class="signature">(<a id="time-delta-months"
@@ -1627,7 +1627,7 @@ unit within the name of the procedure.</p>
 <var>time-delta</var>.</p>
 
 <div class="feature">
-<span class="category">(srfi NNN time-delta)<br>procedure</span>
+<span class="category">(srfi 285 time-delta)<br>procedure</span>
 <code class="signature">(<a id="time-delta-plus" href="#time-delta-plus">time-delta+</a>
                          <var>time-delta<sub>1</sub></var>
                          <var>time-delta<sub>2</sub></var>)</code>
@@ -1638,7 +1638,7 @@ arguments. Specifically, each component is summed; no overflow of smaller
 units to larger ones is calculated.</p>
 
 <div class="feature">
-<span class="category">(srfi NNN time-delta)<br>procedure</span>
+<span class="category">(srfi 285 time-delta)<br>procedure</span>
 <code class="signature">(<a id="time-delta-negate" href="#time-delta-negate">time-delta-negate</a>
                          <var>time-delta</var>)</code>
 </div>
@@ -1647,7 +1647,7 @@ units to larger ones is calculated.</p>
 yielding a time-delta of equivalent magnitude but opposite direction.</p>
 
 <div class="feature">
-<span class="category">(srfi NNN time-delta)<br>procedure</span>
+<span class="category">(srfi 285 time-delta)<br>procedure</span>
 <code class="signature">(<a id="date-plus" href="#date-plus">date+</a>
                          <var>date</var>
                          <var>time-delta</var>)</code>
@@ -1662,7 +1662,7 @@ that date. The calculation is performed according to Annex D of the ISO
 8601-2:2019 specification.</p>
 
 <div class="feature">
-<span class="category">(srfi NNN time-delta)<br>procedure</span>
+<span class="category">(srfi 285 time-delta)<br>procedure</span>
 <code class="signature">(<a id="timestamp-plus" href="#timestamp-plus">timestamp+</a>
                          <var>timestamp</var>
                          <var>time-delta</var>)</code>
@@ -1676,7 +1676,7 @@ D of the ISO 8601-2:2019 specification.</p>
 <h3>The current time</h3>
 
 <div class="feature">
-<span class="category">(srfi NNN current-time)<br>procedure</span>
+<span class="category">(srfi 285 current-time)<br>procedure</span>
 <code class="signature">(<a id="current-moment" href="#current-moment">current-moment</a>)</code>
 </div>
 
@@ -1690,14 +1690,14 @@ an inexact number. Implementations of this SRFI should use exact sources
 of the current time when possible.</p></div>
 
 <div class="feature">
-<span class="category">(srfi NNN current-time)<br>procedure</span>
+<span class="category">(srfi 285 current-time)<br>procedure</span>
 <code class="signature">(<a id="current-utc-timestamp" href="#current-utc-timestamp">current-utc-timestamp</a>)</code>
 </div>
 
 <p>Equivalent to <code>(moment-&gt;timestamp (current-moment) utc-timezone)</code>.</p>
 
 <div class="feature">
-<span class="category">(srfi NNN current-time)<br>procedure</span>
+<span class="category">(srfi 285 current-time)<br>procedure</span>
 <code class="signature">(<a id="current-system-timestamp" href="#current-system-timestamp">current-system-timestamp</a>)</code>
 </div>
 

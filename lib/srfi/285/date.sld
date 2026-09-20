@@ -1,9 +1,9 @@
 ;;; SPDX-FileCopyrightText: 2026 Peter McGoron
 ;;; SPDX-License-Identifier: MIT
 
-(define-library (srfi NNN date)
+(define-library (srfi 285 date)
   (import (scheme base)
-          (srfi NNN internal date))
+          (srfi 285 internal date))
   (export make-date date? date-ymd
           date-year date-month date-day
           date->iso-8601
