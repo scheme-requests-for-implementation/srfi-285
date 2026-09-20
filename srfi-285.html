@@ -690,7 +690,7 @@ given date object, as an exact integer.</p>
                            (floor-quotient (+ 5 (* 8 century)) 25))
                         30))
          (epact (if (or (zero? epact)
-                        (and (= epact 1) (< 10 (modulo year 19))))
+                        (and (= epact 1) (&lt; 10 (modulo year 19))))
                     (+ epact 1)
                     epact))
          (paschal-moon (<a href="#rata-die-to-date">rata-die-&gt;date</a>
@@ -827,8 +827,8 @@ which is why only English versions are used.
 
 <div class="feature">
 <span class="category">(srfi 285 gregorian)<br>procedure</span>
-<code class="signature">(<a id="nth-in-month"
-                            href="#nth-in-month"
+<code class="signature">(<a id="last-in-month"
+                            href="#last-in-month"
 >last-in-month</a> <var>year</var> <var>month</var> <var>weekday</var>)</code><br>
 </div>
 
@@ -956,19 +956,19 @@ of the day in the TAI calendar which the given moment object represents.</p>
 <var>moment<sub>1</sub></var>
 <var>moment<sub>2</sub></var>
 <var>moment<sub>3</sub></var> …)</code><br>
-<code class="signature">(<a id="momenteqp" href="#momenteqp">moment&lt;?</a>
+<code class="signature">(<a id="momentltp" href="#momentltp">moment&lt;?</a>
 <var>moment<sub>1</sub></var>
 <var>moment<sub>2</sub></var>
 <var>moment<sub>3</sub></var> …)</code><br>
-<code class="signature">(<a id="momenteqp" href="#momenteqp">moment&lt;=?</a>
+<code class="signature">(<a id="momentltep" href="#momentltep">moment&lt;=?</a>
 <var>moment<sub>1</sub></var>
 <var>moment<sub>2</sub></var>
 <var>moment<sub>3</sub></var> …)</code><br>
-<code class="signature">(<a id="momenteqp" href="#momenteqp">moment&gt;?</a>
+<code class="signature">(<a id="momentgtp" href="#momentgtp">moment&gt;?</a>
 <var>moment<sub>1</sub></var>
 <var>moment<sub>2</sub></var>
 <var>moment<sub>3</sub></var> …)</code><br>
-<code class="signature">(<a id="momenteqp" href="#momenteqp">moment&gt;=?</a>
+<code class="signature">(<a id="momentgtep" href="#momentgtep">moment&gt;=?</a>
 <var>moment<sub>1</sub></var>
 <var>moment<sub>2</sub></var>
 <var>moment<sub>3</sub></var> …)</code><br>
@@ -1075,7 +1075,7 @@ information.</p>
 <div class="feature">
 <span class="category">(srfi 285 timestamp)<br>procedure</span>
 <code class="signature">(<a id="timestampp" href="#timestampp">timestamp?</a> <var>obj</var>)</code>
-<div>
+</div>
 
 <p>Returns <code>#t</code> if <var>obj</var> is a timestamp object,
 and <code>#f</code> if <var>obj</var> is any other object.</p>
@@ -1084,7 +1084,7 @@ and <code>#f</code> if <var>obj</var> is any other object.</p>
 <span class="category">(srfi 285 timestamp)<br>procedure</span>
 <code class="signature">(<a id="moment-to-timestamp" href="#moment-to-timestamp">moment-&gt;timestamp</a>
 <var>moment</var> <var>timezone</var>)</code>
-<div>
+</div>
 
 <p>Returns a timestamp object reflecting the civil time in the time zone
 <var>timezone</var> at the instant represented by <var>moment</var>.</p>
@@ -1093,7 +1093,7 @@ and <code>#f</code> if <var>obj</var> is any other object.</p>
 <span class="category">(srfi 285 timestamp)<br>procedure</span>
 <code class="signature">(<a id="timestamp-to-moment" href="#timestamp-to-moment">timestamp-&gt;moment</a>
 <var>timestamp</var>)</code>
-<div>
+</div>
 
 <p>Returns a moment object corresponding to the instant when <var>timestamp</var>
 was observed in its time zone.</p>
@@ -1102,7 +1102,7 @@ was observed in its time zone.</p>
 <span class="category">(srfi 285 timestamp)<br>procedure</span>
 <code class="signature">(<a id="timestamp-in-timezone" href="#timestamp-in-timezone">timestamp-in-timezone</a>
 <var>timestamp</var> <var>timezone</var>)</code>
-<div>
+</div>
 
 <p>Perform a time zone conversion on a timestamp, returning a timestamp
 which reflects the same corresponding moment but with a different time
@@ -1116,7 +1116,7 @@ zone. Equivalent to:</p>
 <code class="signature">(<a id="posix-time-to-utc-timestamp"
                             href="#posix-time-to-utc-timestamp">posix-time-&gt;utc-timestamp</a>
 <var>posix-seconds</var> [<var>nanoseconds</var>])</code>
-<div>
+</div>
 
 <p>Returns a timestamp in the UTC time zone corresponding to the given POSIX
 time (a count of seconds since 1 January 1970, minus leap seconds).</p>
@@ -1149,7 +1149,7 @@ will get a timestamp for it in the user’s local time zone.</p>
 <code class="signature">(<a id="timestamp-to-utc-posix-time"
                             href="#timestamp-to-utc-posix-time">timestamp-&gt;utc-posix-time</a>
 <var>timestamp</var>)</code>
-<div>
+</div>
 
 <p>Returns an exact rational representing the <var>timestamp</var> as a count of
 seconds since midnight UTC on 1 January 1970, minus leap seconds. The
@@ -1172,7 +1172,7 @@ the expectation of losslessness) will look wrong.</p></div>
 <code class="signature">(<a id="timestamp-date"
                             href="#timestamp-date">timestamp-date</a>
 <var>timestamp</var>)</code>
-<div>
+</div>
 
 <p>Returns a date object for the date represented by the timestamp object. The
 returned date object is not guaranteed to be the same as any other date
@@ -1193,7 +1193,7 @@ by previous invocations of this procedure on the same timestamp object.</p>
 <code class="signature">(<a id="timestamp-day"
                             href="#timestamp-day">timestamp-day</a>
 <var>timestamp</var>)</code>
-<div>
+</div>
 
 <p>Convenience procedures which are respectively the equivalents of:</p>
 
@@ -1231,7 +1231,7 @@ invocations of this procedure on the same timestamp object.</p>
 <code class="signature">(<a id="timestamp-second"
                             href="#timestamp-second">timestamp-second</a>
 <var>timestamp</var>)</code>
-<div>
+</div>
 
 <p>Convenience procedures which are respectively the equivalents of:</p>
 
@@ -1855,7 +1855,7 @@ Shinn and Wolfgang Corcoran-Mathe.</p>
     Retrieved from <a href="https://hpiers.obspm.fr/iers/bul/bulc/bulletinc.dat">https://hpiers.obspm.fr/iers/bul/bulc/bulletinc.dat</a> on September 5<sup>th</sup>, 2026.</li>
 <li id="leap-seconds-list">IERS. 2026. <code>leap-seconds.txt</code>. Retrieved from
     <a href="https://hpiers.obspm.fr/iers/bul/bulc/ntp/leap-seconds.list"
-    >https://hpiers.obspm.fr/iers/bul/bulc/ntp/leap-seconds.list
+    >https://hpiers.obspm.fr/iers/bul/bulc/ntp/leap-seconds.list</a>
     on September 5<sup>th</sup>, 2026.</li>
 <li id="tzdb">IETF. Time zones. Retrieved from
               <a href="https://www.iana.org/time-zones">https://www.iana.org/time-zones</a>
