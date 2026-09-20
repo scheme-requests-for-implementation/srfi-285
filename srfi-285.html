@@ -135,7 +135,7 @@ and Arvydas Silanskas (implementation)
 </p>
 
 <p>
-  This SRFI details an API for storing and manipluating dates and times.
+  This SRFI details an API for storing and manipulating dates and times.
   This SRFI decomposes dates and times into dates (a count of days in the
   proleptic Gregorian calendar), clock times (time of day, independent of
   time zone), moments (instants in TAI), timezones (a possibly dynamic
@@ -202,7 +202,7 @@ zone object be provided? What if there is none?</li>
 <ul>
   <li><a href="#rationale">Rationale</a></li>
   <li>
-    <a href="#specificiation">Specificiation</a>
+    <a href="#specificiation">Specification</a>
     <ul>
       <li>
         <a href="#initial-definitions">Initial definitions</a>
@@ -236,7 +236,7 @@ zone object be provided? What if there is none?</li>
 <p>
   Representing time in computers is a very difficult task for something
   that people generally expect to work without issue. End users may wish
-  to see non-Gregorian calendars, and may wish to calculate the occurences
+  to see non-Gregorian calendars, and may wish to calculate the occurrences
   of religious festivals on a computer. Beyond cultural reasons, the definition
   of time and the definition of timezones may shift around due to laws,
   <!-- This quote is about currency, but I like it so I put it here. -->
@@ -270,7 +270,7 @@ Gregorian calendar (and, in industrial applications, the derived ISO week
 calendar) is now effectively a worldwide standard. Fortunately this is
 not too hard, because humans have been accurately counting the number
 of sunsets and sunrises for thousands of years, and their methods of
-organizing their counts of these events into more managable periods of
+organizing their counts of these events into more manageable periods of
 time usually follow strict arithmetic rules. A count of days from a known
 epoch, and knowledge of the arithmetic rules of each calendar system,
 is thus sufficient for representing different calendar systems.</p></li>
@@ -282,7 +282,7 @@ using rules that make sense to the majority of humans despite the
 irregularity of calendar systems. E.g. adding 2 years to March 1<sup>st</sup>, 2023
 should result in an answer of March 1<sup>st</sup>, 2025, notwithstanding that the year
 2024 was one day longer than a common year. Adding 1 month to January 31<sup>st</sup>
-should probably result in February 28<sup>th</sup>, Feburary 29<sup>th</sup>, or maybe March 1<sup>st</sup>,
+should probably result in February 28<sup>th</sup>, February 29<sup>th</sup>, or maybe March 1<sup>st</sup>,
 because there is no year with a February 30<sup>th</sup> (except in Sweden in 1712)
 or February 31<sup>st</sup>.</p></li>
 </ul>
@@ -298,7 +298,7 @@ or February 31<sup>st</sup>.</p></li>
   relativity [<a href="#einstein">Einstein 1907</a>].
 </p>
 
-<h2 id="specificiation">Specificiation</h2>
+<h2 id="specificiation">Specification</h2>
 <h3 id="initial-definitions">Initial definitions</h3>
 
 <h4 id="tai">TAI</h4>
@@ -309,7 +309,7 @@ calendar consists of an integer count of days from an arbitrary epoch,
 and a real count of seconds in the range [0, 86400).</p>
 
 <p>At midnight UTC on January 1<sup>st</sup>, 1972, TAI was exactly 10 seconds ahead of
-UTC. Since then, additional leap seconds have been added increasing this
+UTC. Since then, additional leap seconds have been added, increasing this
 difference. However, the TAI-based calendar has incremented monotonically
 by one second for every TAI second, rolling over and incrementing the
 count of days every 86,400 TAI seconds, without observing leap seconds.</p>
@@ -326,7 +326,7 @@ an identical time value to their initial input.</p>
   The difference between TAI and UTC was not fixed prior to 1972, and
   there is no computable relationship between the two, although there is
   some historical data available <a href="#histutc">[RS/PC n.d.]</a>.
-  Most computer timekeeping, takes <dfn>UTC</dfn> to be a
+  Most computer timekeeping takes <dfn>UTC</dfn> to be a
   timescale where TAI&minus;UTC is proleptically assumed to be 10 for
   all times prior to 1972.
 </p></div>
@@ -470,9 +470,9 @@ date object is intended to represent the dates of such events.</p>
 </div>
 
 <p>The date procedures are defined with reference to <a href="ReingoldAndDerschowitz"
->Reingold and Dershowitz 2018</a> (herafter RD); each procedure which has a corresponding formula in
-that book names that formula within its specification. In Reingold and
-Dershowitz, dates are represented by the ‘fixed’ data type, which
+>Reingold and Dershowitz 2018</a> (hereafter RD); each procedure which has a corresponding formula in
+that book names that formula within its specification. In RD,
+dates are represented by the ‘fixed’ data type, which
 in their Common Lisp implementation is simply an exact integer.</p>
 
 <p>The procedures and procedure names here assume use of the Gregorian
@@ -590,7 +590,7 @@ object as an exact integer in the range [0, 6] where 0 is Sunday.</p>
 
 <p>ISSUE: Should there really be both this and <code>date-iso-weekday</code>?</p>
 
-<p>(Reingold and Dershowitz <code>day-of-week-from-fixed</code>.)</p>
+<p>(RD <code>day-of-week-from-fixed</code>.)</p>
 -->
 
 <div class="feature">
@@ -742,7 +742,7 @@ other procedures are defined in the usual way accordingly.</p>
 
 <p>
   Return <code>#t</code> if <var>ei</var> is a Gregorian leap year,
-  i.e., years such that February 29<sup>th</sup> is a valid date.
+  i.e., a year such that February 29<sup>th</sup> is a valid date.
 </p>
 
 <div class="feature">
@@ -771,8 +771,8 @@ other procedures are defined in the usual way accordingly.</p>
 <div class="boxed">
 <p><span class="boxed-tag">Rationale</span>: This procedure allows
 the programmer to use the common English names for the weekdays
-instead of the number equivalent. These are not meant for display,
-and as such only English versions are used.
+instead of the numeric equivalent. These are not meant for display,
+which is why only English versions are used.
 </p></div>
 
 <div class="feature">
@@ -785,7 +785,7 @@ and as such only English versions are used.
 <p>
   Return the number of days in <var>month</var> in the Gregorian
   year <var>year</var>. On leap years, the number of days in
-  Februrary is 29, and in non-leap-years, the number of days is
+  February is 29, and in non-leap-years, the number of days is
   28.
 </p>
 
@@ -983,12 +983,12 @@ in <var>moment<sub>1</sub></var> is the less than the date measurement in <var>m
 the date measurement in <var>moment<sub>1</sub></var> is the same as the date measurement in
 <var>moment<sub>2</sub></var> but the seconds measurement in <var>moment<sub>1</sub></var> is less than the
 seconds measurement in <var>moment<sub>2</sub></var>, and so on. The other procedures are defined in
-the usual way accordingly and are required to be transitive.</p>
+the usual way, accordingly, and are required to be transitive.</p>
 
 <h3 id="timestamps">Timestamps</h3>
 
 <p><dfn>Timestamps</dfn> are what humans usually think of as dates and times. They
-are instants within a specific local timescale which, for the sake of
+are instants within a specific local timescale, which, for the sake of
 convenience, is taken to be derived from TAI by way of UTC. (In some
 places, the official local time zone is defined by reference to mean
 solar time, but computer time-keeping invariably ignores the distinction.)</p>
@@ -1048,11 +1048,11 @@ information.</p>
 <div class="boxed">
 <p><span class="boxed-tag">Note</span>:
   It is possible for a seemingly valid timestamp to not be valid in
-  certain timezomes. For example, the times 2:00 to 2:59 did not exist
+  certain timezones. For example, the times 2:00 to 2:59 did not exist
   on March 8<sup>th</sup>, 2026 in Eastern Time, because at 2:00 EST on
   March 8<sup>th</sup>, 2026, the Eastern United States did its annual
   switch to Eastern Daylight Time. These sort of clock changes may be
-  unpredicatable.
+  unpredictable.
 </p></div>
 
 <div class="feature">
@@ -1121,11 +1121,11 @@ zone. Equivalent to:</p>
 <p>Return a timestamp in the UTC time zone corresponding to the given POSIX
 time (a count of seconds since 1 January 1970, minus leap seconds).</p>
 
-<p> If <var>nanoseconds</var> is not given and error if
+<p> If <var>nanoseconds</var> is not given and if
 <var>posix-seconds</var> is not an exact or inexact rational, then an
-error is signaled. If <var>nanoseconds</var> is given and if either
-<var>posix-seconds</var> or <var>nanoseconds</var> are not exact
-integers, then an error is signaled.</p>
+error is signaled. If <var>nanoseconds</var> is given, and if either
+<var>posix-seconds</var> or <var>nanoseconds</var> is not an exact
+integer, then an error is signaled.</p>
 
 <p>
   If the POSIX time corresponds to a number that does not have a TAI
@@ -1387,7 +1387,7 @@ International Date Line).</p>
 
 <p>A time zone object is modelled on entries from the Olson/ICANN tz
 database, but on operating systems which provide some other means of
-finding time zone change information it should be possible to provide a
+finding time zone change information, it should be possible to provide a
 useful implementation of timestamps and time zones with the information
 they provide.</p>
 
@@ -1398,7 +1398,7 @@ TAI, time zone data from the Olson/ICANN tz database should be taken
 from the <code>right</code> variant of each time zone, not the default
 <code>posix</code> variant. Note that some operating systems do not
 include the <code>right</code> versions of the time zone data; in this
-case, the <code>leapseconds</code> file should provided anyway, and will
+case, the <code>leapseconds</code> file should be provided anyway, and will
 have to be combined with the default <code>posix</code> data.</p></div>
 
 <div class="feature">
@@ -1425,7 +1425,7 @@ have to be combined with the default <code>posix</code> data.</p></div>
 <var>time-delta</var>)</code>
 </div>
 
-<p>Returns a time zone objects which is consistently offset from UTC by
+<p>Returns a time zone object which is consistently offset from UTC by
 the amount of time specified by the time-delta object <var>time-delta</var>. The new
 time zone object is guaranteed to be distinct from all existing time
 zone objects in the sense of the <code>eqv?</code> procedure.</p>
@@ -1461,7 +1461,7 @@ was created.</p></div>
 </div>
 
 <p>
-  Returns a time zone objects which is offset from UTC by
+  Returns a time zone object which is offset from UTC by
   <var>time-delta<sub>std</sub></var>, except on the date
   <var>date<sub>std</sub></var> and time <var>clock-time<sub>std</sub></var>,
   it switches to the offset
@@ -1542,7 +1542,7 @@ future timestamps.
 
 <div class="boxed">
 <p><span class="boxed-tag">Note</span>: If the implementation does not
-read timezone data from the system, this procedure likely does nothing.
+read timezone data from the system, this procedure probably does nothing.
 As stated above, the implementation should do the equivalent of calling
 this procedure once every 24 hours to update the timezone database.
 </p></div>
@@ -1595,7 +1595,7 @@ absolute TAI or UTC time scale, except maybe in an abstract sense. (A
 time-delta used to represent a time zone offset could be interpreted as
 meaning ‘when it is midnight in UTC, you will have to wait minus this
 time delta amount of time before it is midnight in that time zone’,
-but this is very abstruse.)</p>
+but this is abstruse.)</p>
 
 <p>A time-delta is a product type whose components are years, months,
 weeks, days, hours, minutes, and seconds. All the components are
@@ -1717,7 +1717,7 @@ D of the ISO 8601-2:2019 specification.</p>
 <div class="boxed">
 <p><span class="boxed-tag">Note</span>:
 The <span class="report-name">R<sup>7</sup>RS</span> provides only the
-<code>current-second</code> procedure which provides the current time as
+<code>current-second</code> procedure, which provides the current time as
 an inexact number. Implementations of this SRFI should use exact sources
 of the current time when possible.</p></div>
 
@@ -1742,7 +1742,7 @@ on dates to implement constructors for a non-Gregorian calendar;
 specifically, the French republican calendar in its later, purely
 arithmetic form. (Implementing the astronomical form is an exercise for
 the reader — a long, but not particularly intellectually challenging
-one, for anyone armed with a copy of Reingold and Dershowitz.)</p>
+one, for anyone armed with a copy of RD.)</p>
 
 <pre
 >(define proclamation-de-la-république (<a href="#make-date">make-date</a> 1792 9 22))
@@ -1801,10 +1801,10 @@ transparently with code which works with other calendar systems.</p>
   <span class="report-name">R<sup>7</sup>RS</span> with a test suite
   is included in the
   <a href="https://github.com/scheme-requests-for-implementation/srfi-285">SRFI repository</a>.
-  It uses a propletic Gregorian date for the representation
+  It uses a proleptic Gregorian date for the representation
   of date objects, and uses <a href="https://srfi.schemers.org/srfi-170/">SRFI
   170</a> for access to the filesystem. It does not refresh timezone data
-  periodically</p>
+  periodically.</p>
 
 <p>The sample implementation checks the <code>TZ</code> environment variable
    and the <code>/etc/localtime</code> file for the system timezone.
@@ -1813,9 +1813,9 @@ transparently with code which works with other calendar systems.</p>
 </p>
 
 <p>
-  The code is not written for performance in mind, although it caches
+  The code is not written with performance in mind, although it caches
   timezones until refresh.  The code theoretically handles negative leap
-  seconds, but you should not count on it.
+  seconds, but you should not count on that.
 </p>
 
 <p>
@@ -1826,7 +1826,7 @@ transparently with code which works with other calendar systems.</p>
 <h2 id="acknowledgements">Acknowledgements</h2>
 
 <p>
-Daphne Preston-Kendal wrote most of this proposal and Arvydas Silanskas
+Daphne Preston-Kendal wrote most of this proposal, and Arvydas Silanskas
 wrote most of the sample implementation. This proposal is posted with
 their permissions.
 </p>
@@ -1837,16 +1837,16 @@ John Cowan.</p>
 <p>Arvydas Silanskas also found numerous mistakes and omissions.</p>
 
 <p>Thanks to the following people for suggesting new features in the
-specification: Arthur Glecker (clock-time type); Antero Mejr (ability
+specification: Arthur Gleckler (clock-time type) and Antero Mejr (ability
 to create timestamp/moment conversions independently of the standard
-implementation; explicit note that the method of finding time zone
+implementation, and explicit note that the method of finding time zone
 database information is implementation-specific).</p>
 
 <p>Thanks to the following people for finding errors in the specification:
-Vincent Manis; Marc Nieper-Wißkirchen.</p>
+Vincent Manis and Marc Nieper-Wißkirchen.</p>
 
-<p>Thanks to the following people for general encouragement: Alex Shinn;
-Wolfgang Corcoran-Mathe.</p>
+<p>Thanks to the following people for general encouragement: Alex
+Shinn and Wolfgang Corcoran-Mathe.</p>
 
 <h2 id="bibliography">Bibliography</h2>
 
