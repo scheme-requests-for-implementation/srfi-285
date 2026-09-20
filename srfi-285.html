@@ -501,7 +501,7 @@ provided for complete representations of week dates (section 5.2.4.1).</p>
 <code class="signature">(<a id="make-date" href="#make-date">make-date</a> <var>year</var> <var>month</var> <var>day</var>)</code>
 </div>
 
-<p>Return a new date object for the date which is represented in the
+<p>Returns a new date object for the date which is represented in the
 Gregorian calendar by the given <var>year</var>, <var>month</var>, and <var>day</var>.</p>
 
 <div class="boxed">
@@ -741,7 +741,7 @@ other procedures are defined in the usual way accordingly.</p>
 </div>
 
 <p>
-  Return <code>#t</code> if <var>ei</var> is a Gregorian leap year,
+  Returns <code>#t</code> if <var>ei</var> is a Gregorian leap year,
   i.e., a year such that February 29<sup>th</sup> is a valid date.
 </p>
 
@@ -783,7 +783,7 @@ which is why only English versions are used.
 </div>
 
 <p>
-  Return the number of days in <var>month</var> in the Gregorian
+  Returns the number of days in <var>month</var> in the Gregorian
   year <var>year</var>. On leap years, the number of days in
   February is 29, and in non-leap-years, the number of days is
   28.
@@ -797,10 +797,10 @@ which is why only English versions are used.
 </div>
 
 <p>
-  Return the day of the month that the <var>k</var>th appearance of the
+  Returns the day of the month that the <var>k</var>th appearance of the
   <var>weekday</var> (interpreted as an ISO weekday; see
   <a href="#date-iso-weekday"><code>date-iso-weekday</code></a>).
-  If there is no such appearance, return <code>#f</code>.
+  If there is no such appearance, returns <code>#f</code>.
 </p>
 
 
@@ -833,7 +833,7 @@ which is why only English versions are used.
 </div>
 
 <p>
-  Return the day of the month that the last appearance of the
+  Returns the day of the month that the last appearance of the
   <var>weekday</var> (interpreted as an ISO weekday; see
   <a href="#date-iso-weekday"><code>date-iso-weekday</code></a>).
 </p>
@@ -1118,7 +1118,7 @@ zone. Equivalent to:</p>
 <var>posix-seconds</var> [<var>nanoseconds</var>])</code>
 <div>
 
-<p>Return a timestamp in the UTC time zone corresponding to the given POSIX
+<p>Returns a timestamp in the UTC time zone corresponding to the given POSIX
 time (a count of seconds since 1 January 1970, minus leap seconds).</p>
 
 <p> If <var>nanoseconds</var> is not given and if
@@ -1174,7 +1174,7 @@ the expectation of losslessness) will look wrong.</p></div>
 <var>timestamp</var>)</code>
 <div>
 
-<p>Return a date object for the date represented by the timestamp object. The
+<p>Returns a date object for the date represented by the timestamp object. The
 returned date object is not guaranteed to be the same as any other date
 object in the sense of <code>eqv?</code> or <code>eq?</code>, including date objects returned
 by previous invocations of this procedure on the same timestamp object.</p>
@@ -1262,7 +1262,7 @@ the timestamp object.</p>
 <var>timestamp</var>)</code><br>
 </div>
 
-<p>Return an exact integer 0 or 1 representing the number of times this
+<p>Returns an exact integer 0 or 1 representing the number of times this
 timestamp has repeated within the time zone (considered as a time zone
 object, not as an offset) at the corresponding moment. This integer is
 almost always 0 except immediately following a switch from summer time to
@@ -1306,7 +1306,7 @@ Israel Standard Time.</p></div>
 </div>
 
 <p>
-  Return <code>#t</code> if the <var>timezone</var> is considered to
+  Returns <code>#t</code> if the <var>timezone</var> is considered to
   be in daylight savings time, and <code>#f</code> otherwise.
 </p>
 
@@ -1489,7 +1489,7 @@ future timestamps.
 </div>
 
 <p>
-  Return the moment that is the earliest entry in the timezones
+  Returns the moment that is the earliest entry in the timezones
   transition list. Moments prior to this are based off of projection
   of the earliest entry, and may be less accurate due to a lack of
   historical data.
@@ -1509,7 +1509,7 @@ future timestamps.
 </div>
 
 <p>
-  Return the moment that is the latest entry in the timezones transition
+  Returns the moment that is the latest entry in the timezones transition
   list. Moments subsequent to this are based off of projection from
   the latest entry and known regular timezone changes (such as daylight
   savings time), and may not be accurate due to unpredictable changes
@@ -1689,7 +1689,7 @@ yielding a time-delta of equivalent magnitude but opposite direction.</p>
 hours, minutes, or seconds components.</p>
 
 <p>Calculate the date that results from adding the <var>time-delta</var> to
-the date object <var>date</var> and return a new date object representing
+the date object <var>date</var> and returns a new date object representing
 that date. The calculation is performed according to Annex D of the ISO
 8601-2:2019 specification.</p>
 
@@ -1712,7 +1712,7 @@ D of the ISO 8601-2:2019 specification.</p>
 <code class="signature">(<a id="current-moment" href="#current-moment">current-moment</a>)</code>
 </div>
 
-<p>Return the current time as a moment object.</p>
+<p>Returns the current time as a moment object.</p>
 
 <div class="boxed">
 <p><span class="boxed-tag">Note</span>:
