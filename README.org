@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: MIT
 * SRFI 285: Dates and Times
 
-** by Peter McGoron
+** by Peter McGoron (steward, corresponding author), John Cowan (original design), Daphne Preston-Kendal (design and specification), and Arvydas Silanskas (implementation)
 
 
 
