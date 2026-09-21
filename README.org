@@ -1,0 +1,24 @@
+
+# SPDX-FileCopyrightText: 2026 Arthur A. Gleckler
+# SPDX-License-Identifier: MIT
+* SRFI 285: Dates and Times
+
+** by Peter McGoron
+
+
+
+keywords: [[https://srfi.schemers.org/?keywords=data-structure][Data Structure]]
+
+library-name: date-and-time
+
+This repository hosts [[https://srfi.schemers.org/srfi-285/][SRFI 285]]: Dates and Times, a [[https://srfi.schemers.org/][Scheme Request for Implementation]].
+
+This SRFI is in /draft/ status.
+See also [[/srfi-19/][SRFI 19: Time Data Types and Procedures]] and [[/srfi-174/][SRFI 174: POSIX Timespecs]].
+The full documentation for this SRFI can be found in the [[https://srfi.schemers.org/srfi-285/srfi-285.html][SRFI Document]].
+
+If you'd like to participate in the discussion of this SRFI, or report issues with it, please [[https://srfi.schemers.org/srfi-285/][join the SRFI-285 mailing list]] and send your message there.
+
+Thank you.
+
+[[mailto:srfi-editors@srfi.schemers.org][The SRFI Editors]]
