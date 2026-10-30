@@ -71,7 +71,42 @@
   (test-equal 1 (date-iso-week (make-date 2008 12 29)))
   (test-equal 2009 (date-iso-week-year (make-date 2008 12 29)))
   (test-equal 53 (date-iso-week (make-date 2010 1 2)))
-  (test-equal 2009 (date-iso-week-year (make-date 2010 1 2))))
+  (test-equal 2009 (date-iso-week-year (make-date 2010 1 2)))
+
+  ;; years where January 1 falls on a Friday: ISO week 1 starts on Jan 4
+  (test-equal 53 (date-iso-week (make-date 2016 1 1)))
+  (test-equal 2015 (date-iso-week-year (make-date 2016 1 1)))
+  (test-equal 1 (date-iso-week (make-date 2016 1 4)))
+  (test-equal 1 (date-iso-week (make-date 2016 1 10)))
+  (test-equal 22 (date-iso-week (make-date 2016 6 1)))
+  (test-equal 52 (date-iso-week (make-date 2016 12 31)))
+
+  ;; years where January 1 falls on a Saturday: ISO week 1 starts on Jan 3
+  (test-equal 52 (date-iso-week (make-date 2022 1 1)))
+  (test-equal 2021 (date-iso-week-year (make-date 2022 1 1)))
+  (test-equal 52 (date-iso-week (make-date 2022 1 2)))
+  (test-equal 1 (date-iso-week (make-date 2022 1 3)))
+  (test-equal 1 (date-iso-week (make-date 2022 1 9)))
+  (test-equal 52 (date-iso-week (make-date 2022 12 31)))
+
+  ;; years where January 1 falls on a Sunday: ISO week 1 starts on Jan 2
+  (test-equal 52 (date-iso-week (make-date 2023 1 1)))
+  (test-equal 2022 (date-iso-week-year (make-date 2023 1 1)))
+  (test-equal 1 (date-iso-week (make-date 2023 1 2)))
+  (test-equal 1 (date-iso-week (make-date 2023 1 8)))
+  (test-equal 52 (date-iso-week (make-date 2023 12 31)))
+
+  ;; early-January dates belonging to the last week of the previous year
+  (test-equal 53 (date-iso-week (make-date 1993 1 3)))
+  (test-equal 1992 (date-iso-week-year (make-date 1993 1 3)))
+  (test-equal 52 (date-iso-week (make-date 1994 1 1)))
+  (test-equal 1993 (date-iso-week-year (make-date 1994 1 1)))
+  (test-equal 52 (date-iso-week (make-date 2017 1 1)))
+  (test-equal 2016 (date-iso-week-year (make-date 2017 1 1)))
+
+  ;; late-December dates belonging to week 1 of the next year
+  (test-equal 1 (date-iso-week (make-date 2024 12 30)))
+  (test-equal 2025 (date-iso-week-year (make-date 2024 12 30))))
 
 (test-group "Rata Die"
     (test-equal 1 (date->rata-die (make-date 1 1 1)))

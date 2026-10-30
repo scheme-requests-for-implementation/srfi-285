@@ -126,10 +126,11 @@
     ((-1)
      (let* ((day-of-week-on-jan1 (date-iso-weekday (make-date* (- (date-year date) 1) 1 1)))
             ;; first week is the one which has first thursday in the new year
-            ;; offset is amount to add to `days` to make relative to monday of first week
-            (offset (if (>= 5 day-of-week-on-jan1)
-                        (- day-of-week-on-jan1 1)
-                        (- 1 day-of-week-on-jan1)))
+            ;; offset is amount to add to `days` (1-based day of year) to make
+            ;; relative to monday of first week
+            (offset (if (<= day-of-week-on-jan1 4)
+                        (- day-of-week-on-jan1 2)
+                        (- day-of-week-on-jan1 9)))
             (day-count (+ offset
                           (if (leap-year? (- year 1)) 366 365)
                           day)))
@@ -138,10 +139,13 @@
     (else
       (let* ((day-of-week-on-jan1 (date-iso-weekday (make-date* (date-year date) 1 1)))
              ;; first week is the one which has first thursday in the new year
-             ;; offset is amount to add to `days` to make relative to monday of first week (which could be in prev year)
-             (offset (if (>= 5 day-of-week-on-jan1)
-                         (- day-of-week-on-jan1 1)
-                         (- 1 day-of-week-on-jan1)))
+             ;; offset is amount to add to `days` (1-based day of year) to make
+             ;; relative to monday of first week (which could be in prev year):
+             ;; - Jan 1 is Mon-Thu: the first week contains Jan 1
+             ;; - Jan 1 is Fri-Sun: the first week starts on Jan (10-wd)
+             (offset (if (<= day-of-week-on-jan1 4)
+                         (- day-of-week-on-jan1 2)
+                         (- day-of-week-on-jan1 9)))
              (day-count (+ (days-since-year-start date) offset)))
         (values year
                 (+ 1 (floor-quotient day-count 7)))))))
