@@ -48,6 +48,21 @@
         (error "seconds-delta called with invalid parameters" v))
     (make-delta 0 0 0 0 0 0 v))
 
+;; Returns a time-delta with the milliseconds carried over into the
+;; hours, minutes and seconds components. The sub-second remainder is
+;; kept as a fractional seconds component. No carrying is done into
+;; days or larger components.
+(define (milliseconds-delta v)
+    (unless (integer? v)
+        (error "milliseconds-delta called with invalid parameters" v))
+    (let* ((total-sec (quotient v 1000))
+           (frac-ms (modulo v 1000))
+           (h (quotient total-sec 3600))
+           (rem (modulo total-sec 3600))
+           (m (quotient rem 60))
+           (s (+ (modulo rem 60) (/ frac-ms 1000))))
+      (make-delta 0 0 0 0 h m s)))
+
 (define (time-delta+ . dts)
     (define (sum-component getter)
         (fold (lambda (dt sum) (+ sum (getter dt)))

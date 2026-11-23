@@ -366,6 +366,47 @@
     (test-equal -16 (time-delta-minutes time-delta*))
     (test-equal -17 (time-delta-seconds time-delta*))))
 
+(test-group "milliseconds-delta"
+  ;; sub-second remainder is kept as fractional seconds
+  (let ((dt (milliseconds-delta 500)))
+    (test-assert (time-delta? dt))
+    (test-equal 0 (time-delta-hours dt))
+    (test-equal 0 (time-delta-minutes dt))
+    (test-equal 1/2 (time-delta-seconds dt)))
+  ;; whole seconds
+  (let ((dt (milliseconds-delta 5000)))
+    (test-equal 5 (time-delta-seconds dt)))
+  ;; sub-second + whole seconds: 29.4s
+  (let ((dt (milliseconds-delta 29400)))
+    (test-equal 0 (time-delta-hours dt))
+    (test-equal 0 (time-delta-minutes dt))
+    (test-equal 147/5 (time-delta-seconds dt)))
+  ;; carry into minutes: 90000ms = 1m30s
+  (let ((dt (milliseconds-delta 90000)))
+    (test-equal 0 (time-delta-hours dt))
+    (test-equal 1 (time-delta-minutes dt))
+    (test-equal 30 (time-delta-seconds dt)))
+  ;; whole minutes: 720000ms = 12m
+  (let ((dt (milliseconds-delta 720000)))
+    (test-equal 12 (time-delta-minutes dt))
+    (test-equal 0 (time-delta-seconds dt)))
+  ;; carry into hours: 3900000ms = 1h5m
+  (let ((dt (milliseconds-delta 3900000)))
+    (test-equal 1 (time-delta-hours dt))
+    (test-equal 5 (time-delta-minutes dt))
+    (test-equal 0 (time-delta-seconds dt)))
+  ;; zero
+  (let ((dt (milliseconds-delta 0)))
+    (test-equal 0 (time-delta-hours dt))
+    (test-equal 0 (time-delta-minutes dt))
+    (test-equal 0 (time-delta-seconds dt)))
+  ;; no carry into days: 90000000ms = 25h
+  (let ((dt (milliseconds-delta 90000000)))
+    (test-equal 0 (time-delta-days dt))
+    (test-equal 25 (time-delta-hours dt))
+    (test-equal 0 (time-delta-minutes dt)))
+  (test-error (milliseconds-delta 45.5)))
+
 ;; date arithmetic
 
 (test-group "date+"
