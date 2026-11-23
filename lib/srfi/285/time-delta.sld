@@ -9,6 +9,6 @@
           time-delta-days
           time-delta-hours time-delta-minutes time-delta-seconds
           years-delta months-delta weeks-delta days-delta
-          hours-delta minutes-delta seconds-delta
+          hours-delta minutes-delta seconds-delta milliseconds-delta
           time-delta+ time-delta-negate
           date+ timestamp+))

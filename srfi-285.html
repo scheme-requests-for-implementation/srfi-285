@@ -1645,10 +1645,20 @@ and <code>#f</code> otherwise.</p>
                             href="#hours-delta">hours-delta</a> <var>ei</var>)</code><br>
 <code class="signature">(<a id="seconds-delta"
                             href="#seconds-delta">seconds-delta</a> <var>er</var>)</code><br>
+<code class="signature">(<a id="milliseconds-delta"
+                            href="#milliseconds-delta">milliseconds-delta</a> <var>ei</var>)</code><br>
 </div>
 
 <p>Returns a time-delta object with the corresponding number of the
 unit within the name of the procedure.</p>
+
+<p><code>milliseconds-delta</code> differs from the other constructors
+in that the given number of milliseconds is carried over into the
+hours, minutes, and seconds components: the result has zero years,
+months, weeks, and days components, and the sub-second remainder is
+kept as a fractional seconds component. For example,
+<code>(milliseconds-delta 90000)</code> returns a time-delta of one
+minute and thirty seconds.</p>
 
 <div class="feature">
 <span class="category">(srfi 285 time-delta)<br>procedure</span>
